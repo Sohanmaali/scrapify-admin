@@ -34,7 +34,6 @@ const AppHeaderDropdown = ({ onLogout }) => {
   const dispatch = useDispatch();
   const logoutHandle = () => {
     AuthHelpers.logout(dispatch);
-    // console.log('logoutHandle')
   };
   return (
     <CDropdown variant="nav-item">

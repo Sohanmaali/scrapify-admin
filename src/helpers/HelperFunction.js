@@ -34,8 +34,7 @@ class HelperFunctions {
       const response = await new BasicProvider(
         `${moduleName}?currentPage=${currentPage}&rowPerPage=${rowPerPage}`
       ).getRequest();
-      console.log("=======22============>>>>>>", response?.data);
-
+     
       return response.data;
     } catch (error) {
       console.error("Error fetching data:", error);

@@ -63,30 +63,94 @@
 }
 /* =============================== */
 
-/* Basic styles for the tree */
-.tree-node {
-  padding-left: 20px;
-  margin-bottom: 5px;
-}
-
-/* Line connecting parent and child nodes */
-.tree-node .line {
-  border-left: 2px solid black;
-  height: 100%;
-  position: absolute;
-  left: -10px;
-  top: 5px;
-  bottom: 0;
-}
-
-/* Cursor pointer for folder-like nodes */
-.tree-node .cursor-pointer {
-  cursor: pointer;
-}
-
-
 /* =========== */
 /* Prevent body scroll locking when modal is open */
 body.modal-open {
   overflow-y: scroll !important;
+}
+
+
+/* =================TREE CSS============== */
+.tree-container {
+  position: relative;
+  margin-left: 20px;
+}
+
+.tree-item {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.tree-label {
+  display: flex;
+  align-items: center;
+  /* padding: 5px 10px; */
+  /* border: 1px solid transparent; */
+  /* border-radius: 5px; */
+  /* transition: background-color 0.3s, border-color 0.3s; */
+}
+
+.tree-label:hover {
+  /* background-color: #f0f0f0;
+  border-color: #ddd; */
+}
+
+.tree-label.expanded {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.tree-toggle {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.tree-icon {
+  margin-right: 5px;
+}
+
+.tree-name {
+  /* flex-grow: 1; */
+  transition: color 0.3s;
+}
+
+/* .tree-name:hover {
+  color: #007bff;
+} */
+
+.tree-delete {
+  color: red;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+/* .tree-delete:hover {
+  transform: scale(1.2);
+} */
+
+.tree-children {
+  margin-left: 20px;
+  position: relative;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.tree-children::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10px;
+  width: 10px;
+  height: 100%;
+  border-left: 2px solid #ccc;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

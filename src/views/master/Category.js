@@ -26,12 +26,10 @@ import { useDispatch } from 'react-redux'
 import TreeNode from '../../helpers/treeHelper/TreeHelper'
 
 
-const subHeaderItems = [
-  { name: "All admin", link: "/admin/all", icon: cilSpreadsheet },
-  { name: "Trash admin", link: "/admin/trash", icon: cilTrash },
-];
+
 export default function Category() {
   const [category, setCategory] = useState([])
+  const [parentCategory, setParentCategory] = useState([])
   const [newRegionName, setNewRegionName] = useState('')
   const [expandedNodes, setExpandedNodes] = useState([])
   const dispatch = useDispatch()
@@ -45,46 +43,13 @@ export default function Category() {
     try {
       const response = await new BasicProvider(`category`).getRequest()
       if (response?.status == "success") {
-        // /region/type/country
         setCategory(response?.data || [])
       }
-      console.log("response-====-===---=-1111111111111111=", response?.data);
     } catch (error) {
       console.error("ERROR", error);
 
     }
   }
-
-  // const fetchChildren = async (id) => {
-  //   try {
-  //     console.log("-=-===-=-==-=-", id);
-
-  //     const response = await new BasicProvider(`region/children/${id}`).getRequest();
-
-  //     if (response?.status === "success") {
-  //       setCategory(prevcategory =>
-  //         prevcategory.map(region => {
-  //           if (region._id === id) {
-  //             return {
-  //               ...region,
-  //               children: [...(region.children || []), ...(response?.data || [])]
-  //             };
-  //           }
-  //           return region;
-  //         })
-  //       );
-
-  //     }
-
-  //     console.log("response-=-====22222222-=", response);
-  //   } catch (error) {
-  //     console.error("ERROR", error);
-  //   }
-  // }
-
-
-
-
 
   const fetchById = async (id) => {
     try {
@@ -92,11 +57,12 @@ export default function Category() {
       if (response?.status == "success") {
         setInitialvalues(response?.data || {})
       }
-      // console.log("response-=-====-=", response);
-    } catch (error) {
+      } catch (error) {
       console.error("ERROR", error);
     }
   }
+
+
   useEffect(() => {
     fetchData()
     if (id) {
@@ -116,7 +82,6 @@ export default function Category() {
 
   };
 
-  console.log("initialvalues", initialvalues);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,20 +93,37 @@ export default function Category() {
     }));
 
     try {
-      console.log("initialvalues", { ...initialvalues, name: lines });
 
+      
       const response = await new BasicProvider(`category`).postRequest({ ...initialvalues, name: lines })
-      setInitialvalues({})
+
+      setInitialvalues({
+        name: "",
+        parent: "",
+        type: "",
+      })
       fetchData();
     } catch (error) {
       console.error("ERROR", error);
     }
   };
 
+  const findByType = async (type) => {
+    try {
+      const response = await new BasicProvider(`category/type/${type}`).getRequest()
+
+
+      if (response?.status == "success") {
+        setParentCategory(response?.data || [])
+      }
+    } catch (error) {
+      console.error("ERROR", error);
+    }
+  }
+
 
   const handleDeleteRegion = async (id) => {
     try {
-      console.log("-===-===-= -=id", id);
 
       const response = await new BasicProvider(`category/multi/delete`, dispatch).deleteRequest({ ids: [id] })
       fetchData()
@@ -154,7 +136,7 @@ export default function Category() {
       prev.includes(nodeId) ? prev.filter((id) => id !== nodeId) : [...prev, nodeId]
     )
   }
-  const navigatere =(id)=> {
+  const navigatere = (id) => {
     navigate(`/master/category/${id}/edit`)
   }
 
@@ -162,7 +144,9 @@ export default function Category() {
   return (
     <>
       <SubHeader
-        subHeaderItems={subHeaderItems}
+        // subHeaderItems={subHeaderItems}
+        name="Category"
+        isHideAddButton={true}
       // moduleName="admin"
       />
       <CContainer>
@@ -189,13 +173,13 @@ export default function Category() {
 
                 <div>
                   <CFormLabel className='mt-2'>Category Type</CFormLabel> <span className='text-danger'>*</span>
-                  <CFormSelect name='type' value={initialvalues?.type} onChange={handleChange}>
+                  <CFormSelect name='type' value={initialvalues?.type} onChange={(e) => { findByType(e.target.value); handleChange(e) }}>
                     <option value={""}>Select Type</option>
 
-                    {category.length>0 && category.map((cat, idx) => (
-                       <option value={cat?.type}> {cat?.type}</option>
+                    {category.length > 0 && category.map((cat, idx) => (
+                      <option value={cat?.slug} key={idx}> {cat?.slug}</option>
                     ))}
-                   
+
                   </CFormSelect>
                 </div>
 
@@ -204,10 +188,12 @@ export default function Category() {
                   <div>
                     <CFormLabel className='mt-2'>Parent Category<span className='text-danger'>*</span></CFormLabel>
                     <CFormSelect name='parent' value={initialvalues?.parent} onChange={handleChange}>
-                      <option>Select Region</option>
-                      {category?.length > 0 && category.map((region, idx) => (
-                        <option key={idx} value={region?._id}>{region?.name}</option>
-                      ))}
+                      <option>Select Category</option>
+                      {parentCategory?.length > 0 ? (parentCategory.map((parent, idx) => (
+                        <option key={idx} value={parent?._id}>{parent?.name}</option>
+                      ))):(category.map((parent, idx) => (
+                        <option key={idx} value={parent?._id}>{parent?.name}</option>
+                      )))}
                     </CFormSelect>
                   </div>
 
@@ -230,32 +216,17 @@ export default function Category() {
           {/* ======================category Tree==================== */}
           <CCol md={7} >
             {category?.length > 0 && category.map((cat, idx) => (
-               <CCard key={idx} className='mb-4'>
-               <CCardHeader className="bg-dark text-white">
-                 <CCardTitle>{cat?.name}</CCardTitle>
-               </CCardHeader>
-               <CCardBody>
-                 <div className=" ">
-                 <TreeNode nodes={cat?.children} handleToggleExpand={handleToggleExpand} handleDeleteRegion={handleDeleteRegion} expandedNodes={expandedNodes} navigatere={navigatere} />
- 
- 
-                 </div>
-               </CCardBody>
-             </CCard>
+              <CCard key={idx} className='mb-4'>
+                <CCardHeader className="bg-dark text-white">
+                  <CCardTitle>{cat?.name}</CCardTitle>
+                </CCardHeader>
+                <CCardBody>
+                  <div className=" ">
+                    <TreeNode nodes={cat?.children} handleToggleExpand={handleToggleExpand} handleDeleteRegion={handleDeleteRegion} expandedNodes={expandedNodes} navigatere={navigatere} />
+                  </div>
+                </CCardBody>
+              </CCard>
             ))}
-
-            {/* <CCard>
-              <CCardHeader className="bg-dark text-white">
-                <CCardTitle>Product</CCardTitle>
-              </CCardHeader>
-              <CCardBody>
-                <div className=" ">
-                <TreeNode nodes={category} handleToggleExpand={handleToggleExpand} handleDeleteRegion={handleDeleteRegion} expandedNodes={expandedNodes} navigatere={navigatere} />
-
-
-                </div>
-              </CCardBody>
-            </CCard> */}
           </CCol>
         </CRow>
 

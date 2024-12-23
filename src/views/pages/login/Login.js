@@ -42,7 +42,6 @@ const Login = () => {
         setError("Please Provide Valide Email or Password");
       }
     } catch (error) {
-      console.log("error of Auth ", error);
     } finally {
       setIsLoading(false);
     }

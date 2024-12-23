@@ -61,7 +61,6 @@ export default function Allsliders() {
     navigate({ search: searchParams.toString() });
   };
 
-  // console.log("data=========>", data);
 
   useEffect(() => {
     if (rowPerPage) {
@@ -83,7 +82,6 @@ export default function Allsliders() {
         }
       }
       var response;
-      // console.log(performSearch);
       if (performSearch) {
         queryData["page"] = currentPage;
         queryData["count"] = count;
@@ -91,16 +89,13 @@ export default function Allsliders() {
         //   customers/onlycustomer?${HelperFunction.convertToQueryString(
         //     queryData
         //   )}`).getRequest();
-        // console.log(response);
       } else {
-        console.log("calling");
 
         response = await new BasicProvider(
           `slider?page=${currentPage}&count=${count}`,
           dispatch
         ).getRequest();
       }
-      console.log("response", response);
 
       dispatch({ type: "set", data: { slider: response?.data?.data } });
       dispatch({ type: "set", totalCount: response.data.total });
@@ -218,8 +213,6 @@ export default function Allsliders() {
       ...prevState,
       [moduleName]: selectedRows, // Save selected rows for the module
     }));
-
-    console.log(`Selected rows for ${moduleName}:`, selectedRows);
   };
   return (
     <>

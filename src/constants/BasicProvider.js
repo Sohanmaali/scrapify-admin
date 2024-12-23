@@ -16,7 +16,6 @@ class BasicProvider {
       }
       const response = await axios.get(this.url, config);
 
-      // console.log("response", response);
       return this.processResponse(response);
     } catch (error) {
       this.handleException(error);

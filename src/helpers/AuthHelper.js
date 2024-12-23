@@ -9,14 +9,8 @@ class AuthHelpers {
         "auth/admin/login",
         dispatch
       ).postRequest(formdata);
-      console.log("response", response);
-
       if (response.data.access_token) {
-        console.log("in side if block");
-        console.log(
-          "process.env.REACT_APP_COOKIE_PREFIX",
-          process.env.REACT_APP_COOKIE_PREFIX
-        );
+
 
         Cookies.set(
           `${process.env.REACT_APP_COOKIE_PREFIX}_auth`,
@@ -47,8 +41,7 @@ class AuthHelpers {
   }
 
   static async logout(dispatch) {
-    console.log("logout");
-
+   
     try {
       Cookies.remove(`${process.env.REACT_APP_COOKIE_PREFIX}_auth`, {
         path: "/",

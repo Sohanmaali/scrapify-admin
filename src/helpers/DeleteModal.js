@@ -28,13 +28,12 @@ export const DeleteModal = ({
 
   const handleDelete = async () => {
     if (deletionType === "trash") {
-      console.log("if block");
+
 
       const success = await HelperFunctions.trashData(moduleName, userId);
       dispatch({ type: "set", toggleCleared: false });
       dispatch({ type: "set", selectedrows: [] });
       setVisible(false);
-      console.log("success", success);
 
       if (success) {
         const response = await HelperFunctions.getData(
@@ -51,8 +50,6 @@ export const DeleteModal = ({
         userId,
         visitedProfileId
       );
-      console.log("success", success);
-
       dispatch({ type: "set", toggleCleared: false });
       dispatch({ type: "set", selectedrows: [] });
       setVisible(false);
@@ -77,11 +74,10 @@ export const DeleteModal = ({
           rowPerPage,
           visitedProfileId
         );
-        console.log("response=============>>>.", response);
 
         dispatch({ type: "set", data: { [`${module}`]: response.data } });
         dispatch({ type: "set", totalCount: response.total });
-        // console.log("Module", module);
+
       }
     }
   };

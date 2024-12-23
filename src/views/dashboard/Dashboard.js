@@ -10,8 +10,7 @@ const Dashboard = () => {
     try {
       const response = await new BasicProvider(`dashboard/count`).getRequest();
       if (response?.status === "success") {
-        // console.log("response", response);
-        setDashboardCounting(response?.data);
+          setDashboardCounting(response?.data);
       }
     } catch (error) {
       console.error("ERROR FetchDashboardCounting", error);

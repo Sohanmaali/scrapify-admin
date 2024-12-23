@@ -44,7 +44,6 @@ const AppHeader = () => {
     "coreui-free-react-admin-template-theme"
   );
 
-  console.log("userData", userData);
 
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);

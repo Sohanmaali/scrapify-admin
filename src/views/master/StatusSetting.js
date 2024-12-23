@@ -69,8 +69,7 @@ export default function StatusSetting() {
   const fetchById = async () => {
     try {
       const response = await new BasicProvider(`status/show/${id}`).getRequest();
-      console.log("response", response);
-      if (response?.status === "success") setStatusData(response?.data);
+       if (response?.status === "success") setStatusData(response?.data);
     } catch (error) {
       console.error("ERROR", error);
       toast.error("Error fetching data");
