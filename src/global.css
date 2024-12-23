@@ -1,0 +1,92 @@
+.keep-scrollbar {
+    overflow-y: auto !important;
+  }
+  
+  body.keep-scrollbar {
+    overflow: auto !important;
+  }
+  
+.my-date-picker{
+  width: 100%;
+}
+.pointer-cursor{cursor: pointer;}
+.rounded-border{
+  border-radius: 8px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+
+/* =======================IMAGE PREV========================= */
+.image-preview {
+  position: relative;
+}
+
+.image-preview-icon {
+  position: absolute;
+  top: 5px;
+  color: red;
+  background-color: aliceblue;
+  border: 1px solid #ccc; /* Added solid border */
+  border-radius: 5px;
+  right: 10px; /* Set default for small screens */
+}
+
+.image {
+  border-radius: 10px;
+  border: 2px solid #ddd; /* Solid border for better visibility */
+  width: 35%; 
+  height: 2%;
+}
+
+.icon {
+  margin: 5px;
+  font-size: 16px; /* Default size for the icon */
+}
+
+/* Media Queries for Responsive Design */
+@media (min-width: 768px) {
+  .image-preview-icon {
+    right: 10px; /* Adjust icon position for medium screens */
+    top: 10px;
+  }
+}
+
+@media (min-width: 992px) {
+  .image-preview-icon {
+    right: 10px; /* Adjust icon position for large screens */
+    top: 5px;
+  }
+
+  .icon {
+    font-size: 20px; /* Increase icon size for larger screens */
+  }
+}
+/* =============================== */
+
+/* Basic styles for the tree */
+.tree-node {
+  padding-left: 20px;
+  margin-bottom: 5px;
+}
+
+/* Line connecting parent and child nodes */
+.tree-node .line {
+  border-left: 2px solid black;
+  height: 100%;
+  position: absolute;
+  left: -10px;
+  top: 5px;
+  bottom: 0;
+}
+
+/* Cursor pointer for folder-like nodes */
+.tree-node .cursor-pointer {
+  cursor: pointer;
+}
+
+
+/* =========== */
+/* Prevent body scroll locking when modal is open */
+body.modal-open {
+  overflow-y: scroll !important;
+}
