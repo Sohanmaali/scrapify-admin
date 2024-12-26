@@ -18,6 +18,8 @@ import {
   CFormTextarea,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { toast } from 'react-toastify';
+
 import { cilSpreadsheet, cilTrash } from '@coreui/icons'
 import SubHeader from '../../components/custome/SubHeader'
 import BasicProvider from '../../constants/BasicProvider'
@@ -57,7 +59,7 @@ export default function Category() {
       if (response?.status == "success") {
         setInitialvalues(response?.data || {})
       }
-      } catch (error) {
+    } catch (error) {
       console.error("ERROR", error);
     }
   }
@@ -85,25 +87,36 @@ export default function Category() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    const lines = initialvalues?.name.split("\n").filter((line) => line.trim() !== "");
-    setInitialvalues((prevValues) => ({
-      ...prevValues,
-      name: lines,
-    }));
+
+    let lines
+    if (!id) {
+
+      lines = initialvalues?.name.split("\n").filter((line) => line.trim() !== "");
+      setInitialvalues((prevValues) => ({
+        ...prevValues,
+        name: lines,
+      }));
+    }
 
     try {
-
-      
-      const response = await new BasicProvider(`category`).postRequest({ ...initialvalues, name: lines })
-
+      if (id) {
+        const response = await new BasicProvider(`category/update/${id}`).patchRequest({ ...initialvalues, name: lines })
+        toast.success("Category Updated Successfully")
+        navigate("/master/category")
+      }
+      else {
+        const response = await new BasicProvider(`category`).postRequest({ ...initialvalues, name: lines })
+        toast.success("Category Created Successfully")
+      }
       setInitialvalues({
         name: "",
         parent: "",
         type: "",
+        price: "",
       })
       fetchData();
     } catch (error) {
+      toast.error("Error", error);
       console.error("ERROR", error);
     }
   };
@@ -191,23 +204,36 @@ export default function Category() {
                       <option>Select Category</option>
                       {parentCategory?.length > 0 ? (parentCategory.map((parent, idx) => (
                         <option key={idx} value={parent?._id}>{parent?.name}</option>
-                      ))):(category.map((parent, idx) => (
+                      ))) : (category.map((parent, idx) => (
                         <option key={idx} value={parent?._id}>{parent?.name}</option>
                       )))}
                     </CFormSelect>
                   </div>
 
+
+
+                </div>
+
+                <div className='mt-2'>
+                  <CFormLabel className=''>Price per kg/unit <span className='text-danger'>*</span></CFormLabel>
+                  <CFormInput
+                    type='text'
+                    name='price'
+                    onChange={handleChange}
+                    value={initialvalues?.price}
+                    placeholder="Enter Price per kg/unit"
+                  />
                 </div>
               </CCardBody>
               <CCardFooter>
                 <div className='d-flex justify-content-center gap-5'>
                   <CButton color="success"
                     onClick={handleSubmit}
-                  >Save</CButton>
+                  >{id ? "Update" : "Save"}</CButton>
                   <CButton color='danger' onClick={() => {
 
-                    setInitialvalues({ name: "", type: "", parent: "", short_name: "" });
-                    navigate(-1)
+                    setInitialvalues({ name: "", type: "", parent: "", price: "" });
+                    navigate("/master/category")
                   }}>Cancel</CButton>
                 </div>
               </CCardFooter>
