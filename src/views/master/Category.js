@@ -26,6 +26,9 @@ import BasicProvider from '../../constants/BasicProvider'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import TreeNode from '../../helpers/treeHelper/TreeHelper'
+import ImagePreview from '../../components/custome/ImagePreview';
+import createFormData from '../../helpers/createFormData';
+// import createFormData from '../../helpers/createFormData';
 
 
 
@@ -43,7 +46,10 @@ export default function Category() {
 
   const fetchData = async () => {
     try {
-      const response = await new BasicProvider(`category`).getRequest()
+      const response = await new BasicProvider(`cms/category`).getRequest()
+
+
+
       if (response?.status == "success") {
         setCategory(response?.data || [])
       }
@@ -55,7 +61,8 @@ export default function Category() {
 
   const fetchById = async (id) => {
     try {
-      const response = await new BasicProvider(`category/show/${id}`).getRequest()
+      const response = await new BasicProvider(`cms/category/show/${id}`).getRequest()
+
       if (response?.status == "success") {
         setInitialvalues(response?.data || {})
       }
@@ -72,16 +79,35 @@ export default function Category() {
     }
   }, [id])
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   // Special handling for the textarea
+
+  //   setInitialvalues((prevValues) => ({
+  //     ...prevValues,
+  //     [name]: value,
+  //   }));
+
+  // };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
 
-    // Special handling for the textarea
-
-    setInitialvalues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-
+    // Check if the input is a file input (i.e., it contains files)
+    if (files) {
+      // Handle file input (e.g., for images)
+      setInitialvalues((prevProfile) => ({
+        ...prevProfile,
+        [name]: files[0], // Assuming only one file is selected
+      }));
+    } else {
+      // Handle regular input (text, number, etc.)
+      setInitialvalues((prevProfile) => ({
+        ...prevProfile,
+        [name]: value,
+      }));
+    }
   };
 
 
@@ -97,15 +123,19 @@ export default function Category() {
         name: lines,
       }));
     }
-
+    const data = createFormData({ ...initialvalues, name: lines })
+    // const data ={}
+    if (!data) {
+      return
+    }
     try {
       if (id) {
-        const response = await new BasicProvider(`category/update/${id}`).patchRequest({ ...initialvalues, name: lines })
+        const response = await new BasicProvider(`cms/category/update/${id}`).patchRequest(data)
         toast.success("Category Updated Successfully")
         navigate("/master/category")
       }
       else {
-        const response = await new BasicProvider(`category`).postRequest({ ...initialvalues, name: lines })
+        const response = await new BasicProvider(`cms/category`).postRequest(data)
         toast.success("Category Created Successfully")
       }
       setInitialvalues({
@@ -224,6 +254,24 @@ export default function Category() {
                     placeholder="Enter Price per kg/unit"
                   />
                 </div>
+
+
+                <div className='mt-2'>
+                  <CFormLabel className=''>Featured Image</CFormLabel>
+                  <CFormInput
+                    type='file'
+                    name='featured_image'
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='mt-3'>
+                  <ImagePreview
+                    initialvalues={initialvalues}
+                    setInitialvalues={setInitialvalues}
+                  />
+                </div>
+
+
               </CCardBody>
               <CCardFooter>
                 <div className='d-flex justify-content-center gap-5'>
@@ -244,7 +292,7 @@ export default function Category() {
             {category?.length > 0 && category.map((cat, idx) => (
               <CCard key={idx} className='mb-4'>
                 <CCardHeader className="bg-dark text-white">
-                  <CCardTitle>{cat?.name}</CCardTitle>
+                  <CCardTitle onClick={() => navigatere(cat?._id)}>{cat?.name}</CCardTitle>
                 </CCardHeader>
                 <CCardBody>
                   <div className=" ">

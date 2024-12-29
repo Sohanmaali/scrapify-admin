@@ -4,25 +4,25 @@ import { cilPencil, cilSpreadsheet, cilTrash } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 
 const ImagePreview = ({ initialvalues, setInitialvalues }) => {
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
 
-      setInitialvalues((prev) => ({ ...prev, image: file }));
-    }
-  };
+  console.log("initialvalues", initialvalues);
+  
 
   const removeImage = () => {
-    setInitialvalues((prev) => ({ ...prev, image: null }));
+    setInitialvalues((prev) => ({ ...prev, featured_image: null }));
   };
+  const image =
+    initialvalues?.featured_image instanceof File
+      ? URL.createObjectURL(initialvalues?.featured_image)
+      : `${process.env.REACT_APP_NODE_URL}/${initialvalues?.featured_image?.filepath}` || '/images/noimage.png'
+
 
   return (
     <div className="image-preview-container">
-      {initialvalues.image && (
+      {initialvalues.featured_image && (
         <div className="image-preview">
           <CImage
-            src={initialvalues.image}
+            src={image}
             alt="Selected Image"
             height={"100px"}
             className=" image"
