@@ -14,7 +14,7 @@ const ImagePreview = ({ initialvalues, setInitialvalues }) => {
   const image =
     initialvalues?.featured_image instanceof File
       ? URL.createObjectURL(initialvalues?.featured_image)
-      : `${process.env.REACT_APP_NODE_URL}/${initialvalues?.featured_image?.filepath}` || '/images/noimage.png'
+      : `${process.env.REACT_APP_NODE_URL}/${initialvalues?.featured_image?.filepath}` || '/assert/images/noimage.png'
 
 
   return (
