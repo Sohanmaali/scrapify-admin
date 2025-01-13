@@ -36,6 +36,7 @@ class App extends Component {
     } catch (error) {
       console.error(error);
     }
+    
     return (
       <HashRouter>
         <ToastContainer> </ToastContainer>
@@ -54,7 +55,7 @@ class App extends Component {
           <Route
             path="*"
             name="Home"
-            element={!validToken ? <DefaultLayout /> : <Login />}
+            element={validToken ? <DefaultLayout /> : <Login />}
           />
           {/* <Route path="*" name="Home" element={<DefaultLayout />} /> */}
         </Routes>

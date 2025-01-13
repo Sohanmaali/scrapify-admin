@@ -9,6 +9,7 @@ const SliderTrash = React.lazy(() => import("./slider/trash"));
 
 const routes = [
   { path: "/cms/slider/create", name: "Slider", element: SliderCreate },
+  { path: "/cms/slider/:id/edit", name: "Slider", element: SliderCreate },
   { path: "/cms/slider/all", name: "Slider", element: SliderAll },
   { path: "/cms/slider/trash", name: "Slider", element: SliderTrash },
 

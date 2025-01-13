@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 class BasicProvider {
   constructor(url, dispatch) {
-    this.url = "http://localhost:3004" + "/api/" + url;
+    this.url = process.env.REACT_APP_NODE_URL + "/api/" + url;
     // this.url = process.env.REACT_APP_NODE_URL + "/api/" + url;
 
     this.dispatch = dispatch;

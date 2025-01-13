@@ -1,4 +1,4 @@
-import { object } from "prop-types";
+import { toast } from "react-toastify";
 
 const isValidDate = (date) => {
   const parsedDate = Date.parse(date);
@@ -26,14 +26,30 @@ export const submitHalper = (initialValues, validationRules, dispatch) => {
   });
 
   if (Object.keys(errors).length > 0) {
+    // Display each error as a toast notification
+    Object.values(errors).forEach((error) => toast.error(error));
     dispatch({ type: "SET_ERRORS", payload: errors });
     return false; // Validation failed
   }
 
   // No errors, return the form values in FormData
   const formData = new FormData();
+  // Object.keys(initialValues).forEach((key) => {
+  //   formData.append(key, initialValues[key]);
+  // });
+
   Object.keys(initialValues).forEach((key) => {
-    formData.append(key, initialValues[key]);
+    if (key === "gallery" && Array.isArray(initialValues[key])) {
+      initialValues[key].forEach((item, index) => {
+        if (item instanceof File) {
+          formData.append(`${key}`, item);
+        } else {
+          formData.append(`exist_gallery`, JSON.stringify(item));
+        }
+      });
+    } else {
+      formData.append(key, initialValues[key]);
+    }
   });
 
   return formData;

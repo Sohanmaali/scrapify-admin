@@ -165,7 +165,7 @@ export default function AllCustomer() {
         >
           <div>
             <div className="product_name">
-              {row?.first_name} {row?.last_name}
+              {row?.name}
             </div>
             {/* <div className="product_slug"> /{row.slug}</div> */}
           </div>
@@ -214,7 +214,7 @@ export default function AllCustomer() {
         <div className="action-btn d-flex gap-2">
           <div className="edit-btn">
             <CIcon
-              className="pointer_cursor"
+              className="pointer-cursor"
               icon={cilPencil}
               onClick={() => navigate(`/customer/${row._id}/edit`)}
             />
@@ -222,17 +222,7 @@ export default function AllCustomer() {
 
           <div className="delet-btn">
             <CIcon
-              className="pointer_cursor"
-              icon={cilBraille}
-              onClick={() => {
-                navigate(`/bill/create/${row?._id}`);
-              }}
-            />
-          </div>
-
-          <div className="delet-btn">
-            <CIcon
-              className="pointer_cursor"
+              className="pointer-cursor"
               icon={cilTrash}
               onClick={() => {
                 setVisible(true);

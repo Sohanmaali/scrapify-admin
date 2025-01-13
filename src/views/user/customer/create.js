@@ -19,33 +19,31 @@ import { useDispatch } from "react-redux";
 import BasicProvider from "../../../constants/BasicProvider";
 import ImagePreview from "../../../components/custome/ImagePreview";
 import SubHeader from "../../../components/custome/SubHeader";
-import { cilPencil, cilSpreadsheet, cilTrash } from "@coreui/icons";
+import { cilSpreadsheet, cilTrash } from "@coreui/icons";
 import { submitHalper } from "../../../helpers/submitHalper";
 
 const subHeaderItems = [
-  { name: "All customer", link: "/customer/all", icon: cilSpreadsheet },
-  { name: "Trash customer", link: "/customer/trash", icon: cilTrash },
+  { name: "All Customers", link: "/customer/all", icon: cilSpreadsheet },
+  { name: "Trash Customers", link: "/customer/trash", icon: cilTrash },
 ];
 
 export default function CreateCustomer() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [initialvalues, setInitialvalues] = useState({
-    first_name: "",
-    last_name: "",
+  const [initialValues, setInitialValues] = useState({
+    name: "",
     mobile: "",
-    // role: "",
+    role: "",
     email: "",
     address: "",
-    image: "",
+    featured_image: "",
     password: "",
     confirm_password: "",
   });
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  console.log("initialvalues", initialvalues);
 
   useEffect(() => {
     if (id) fetchData();
@@ -57,82 +55,76 @@ export default function CreateCustomer() {
         `customer/show/${id}`,
         dispatch
       ).getRequest();
-      console.log("response", response);
 
-      if (response?.status === "success") setInitialvalues(response?.data);
+      console.log("-=-==-=-=response=-=-=-", response);
+      
+      if (response?.status === "success") {
+        setInitialValues(response.data);
+      }
     } catch (error) {
-      console.error("ERROR", error);
-
       toast.error("Error fetching data");
     }
   };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-    setInitialvalues((prevValues) => ({
-      ...prevValues,
-      [name]: type === "file" ? URL.createObjectURL(files[0]) : value,
+
+    console.log("files", files);
+    console.log("files", value);
+
+    setInitialValues((prev) => ({
+      ...prev,
+      [name]: type === "file" ? files[0] : value,
     }));
   };
 
-  const ValidationRules = {
-    first_name: { required: true },
-    last_name: { required: true },
+  const validationRules = {
+    name: { required: true },
     mobile: { required: true },
     email: { required: true },
-    confirm_password: { required: true },
-    // role: { required: true },
-    // address: { required: true },
-
-    // works: { required: true },
+    password: { required: true },
+    confirm_password: { required: !id },
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("call");
-
     setIsLoading(true);
 
-    // if (
-    //   // initialvalues.password.trim() !== initialvalues.confirm_password.trim()
-    // ) {
-    //   console.log("run");
+    if (!id && initialValues.password !== initialValues.confirm_password) {
+      setErrors({ confirm_password: "Passwords do not match" });
+      toast.error("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
 
-    //   setErrors((prev) => ({
-    //     ...prev,
-    //     confirm_password: "Passwords do not match",
-    //   }));
-    //   setIsLoading(false);
-    //   return;
-    // }
+    const formData = submitHalper(initialValues, validationRules, dispatch);
+    if (!formData) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // const data = submitHalper(initialvalues, ValidationRules, dispatch);
-      // if (!data) {
-      //   return;
-      // }
       let response;
       if (id) {
         response = await new BasicProvider(
-          `admin/update/${id}`,
+          `customer/update/${id}`,
           dispatch
-        ).patchRequest(initialvalues);
-
+        ).patchRequest(formData);
         toast.success("Data updated successfully");
-        setErrors({});
       } else {
-        response = await new BasicProvider(`admin`, dispatch).postRequest(
-          initialvalues
+        response = await new BasicProvider("customer", dispatch).postRequest(
+          formData
         );
         toast.success("Data created successfully");
+        navigate(`/customer/${response.data._id}/edit`);
       }
-      navigate(`/admin/${response.data._id}/edit`);
+      setErrors({});
     } catch (error) {
-      Object.values(errors).forEach((error) => toast.error(error));
       toast.error("Error saving data");
     } finally {
       setIsLoading(false);
     }
   };
-  console.log(errors);
 
   return (
     <>
@@ -144,107 +136,103 @@ export default function CreateCustomer() {
       <CContainer>
         <CForm onSubmit={handleSubmit}>
           <CRow className="justify-content-between">
+            {/* Personal Information Card */}
             <CCol md={8} lg={6}>
               <CCard className="shadow">
-                <CCardHeader>
+                <CCardHeader className="bg-dark text-white">
                   <h5>Personal Information</h5>
                 </CCardHeader>
                 <CCardBody>
                   <FormInput
-                    label="First Name *"
-                    name="first_name"
-                    value={initialvalues.first_name}
+                    label="Name"
+                    name="name"
+                    value={initialValues.name}
                     onChange={handleChange}
-                    error={errors.first_name}
+                    error={errors.name}
+                    important={true}
                   />
                   <FormInput
-                    label="Last Name"
-                    name="last_name"
-                    value={initialvalues.last_name}
-                    onChange={handleChange}
-                    error={errors.last_name}
-                  />
-                  <FormInput
-                    label="Mobile Number *"
+                    label="Mobile Number"
                     name="mobile"
-                    value={initialvalues.mobile}
+                    value={initialValues.mobile}
                     onChange={handleChange}
                     error={errors.mobile}
+                    important={true}
                   />
-
                   <FormInput
-                    label="Email  *"
+                    label="Email"
                     name="email"
-                    value={initialvalues.email}
+                    value={initialValues.email}
                     type="email"
                     onChange={handleChange}
-                    error={errors?.email}
+                    error={errors.email}
+                    important={true}
                   />
-                  {/* <FormSelect
-                    label="Role *"
-                    name="role"
-                    value={initialvalues.role}
-                    options={[
-                      { label: "Select Role", value: "" },
-                      { label: "Admin", value: "admin" },
-                    ]}
-                    onChange={handleChange}
-                    error={errors.role}
-                  /> */}
                   {!id && (
-                    <div>
+                    <>
                       <FormInput
-                        label="Password *"
+                        label="Password"
                         name="password"
                         type="password"
-                        value={initialvalues.password}
+                        value={initialValues.password}
                         onChange={handleChange}
-                        error={errors.password}
+                        important={true}
                       />
                       <FormInput
-                        label="Confirm Password *"
+                        label="Confirm Password"
                         name="confirm_password"
                         type="password"
-                        value={initialvalues.confirm_password}
+                        value={initialValues.confirm_password}
                         onChange={handleChange}
+                        important={true}
                         error={errors.confirm_password}
                       />
-                    </div>
+                    </>
                   )}
                   <FormInput
                     label="Address"
                     name="address"
-                    value={initialvalues.address}
+                    value={initialValues.address}
                     onChange={handleChange}
-                    error={errors.address}
                   />
                 </CCardBody>
               </CCard>
             </CCol>
 
+            {/* Profile Card */}
             <CCol md={4} lg={6}>
               <CCard className="shadow">
-                <CCardHeader>
+                <CCardHeader className="bg-dark text-white">
                   <h5>Profile</h5>
                 </CCardHeader>
                 <CCardBody>
+                  <FormSelect
+                    label="Role"
+                    name="role"
+                    value={initialValues.role}
+                    options={[
+                      { label: "Select Role", value: "" },
+                      { label: "Customer", value: "customer" },
+                      { label: "Employee", value: "employee" },
+                    ]}
+                    onChange={handleChange}
+                  />
                   <FormInput
-                    label="Select Image"
-                    name="image"
+                    label="Image"
+                    name="featured_image"
                     type="file"
                     accept="image/*"
                     onChange={handleChange}
-                    error={errors.image}
                   />
                   <ImagePreview
-                    initialvalues={initialvalues}
-                    setInitialvalues={setInitialvalues}
+                    initialValues={initialValues}
+                    setInitialValues={setInitialValues}
                   />
                   <div className="d-flex justify-content-around mt-5">
                     <CButton
                       type="submit"
                       color="success"
-                      className="flex-grow-1 mx-2 text-white"
+                      className="text-white"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -257,11 +245,7 @@ export default function CreateCustomer() {
                         "Save"
                       )}
                     </CButton>
-                    <CButton
-                      type="reset"
-                      color="danger"
-                      className="flex-grow-1 mx-2 text-white"
-                    >
+                    <CButton type="reset" color="danger" className="text-white">
                       Cancel
                     </CButton>
                   </div>
@@ -275,6 +259,7 @@ export default function CreateCustomer() {
   );
 }
 
+// FormInput Component
 const FormInput = ({
   label,
   name,
@@ -283,28 +268,32 @@ const FormInput = ({
   onChange,
   error,
   accept,
+  important = false,
 }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name}>{label}</CFormLabel>
+    <CFormLabel htmlFor={name}>
+      {label} {important && <span className="text-danger">*</span>}
+    </CFormLabel>
     <CFormInput
       type={type}
       id={name}
       name={name}
       value={value}
       accept={accept}
-      placeholder={`Enter ${label.toLowerCase()}`}
+      placeholder={`Enter ${label}`}
       onChange={onChange}
     />
     {error && <div className="text-danger">{error}</div>}
   </div>
 );
 
+// FormSelect Component
 const FormSelect = ({ label, name, value, options, onChange, error }) => (
   <div className="mb-3">
-    <CFormLabel htmlFor={name}>{label}</CFormLabel>
+    <CFormLabel htmlFor={name}>{label} </CFormLabel>
     <CFormSelect id={name} name={name} value={value} onChange={onChange}>
       {options.map((option, idx) => (
-        <option key={idx} value={option.value} disabled={option.value === ""}>
+        <option key={idx} value={option.value}>
           {option.label}
         </option>
       ))}

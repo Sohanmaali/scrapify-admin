@@ -147,11 +147,11 @@ const WidgetsDropdown = ({ dashboardCounting, className }) => {
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsA
           color="primary"
-          value={<>{dashboardCounting?.billCount}</>}
-          title="Bills"
+          value={<>{dashboardCounting?.scrapCount}</>}
+          title="Scraps"
           // className="cursor-pointer"
           style={{ cursor: "pointer" }}
-          onClick={() => navigate("/bill/all")}
+          onClick={() => navigate("/scrap/all")}
           // action={
           //   <CDropdown alignment="end">
           //     <CDropdownToggle

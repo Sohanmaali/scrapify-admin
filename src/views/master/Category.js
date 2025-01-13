@@ -132,7 +132,7 @@ export default function Category() {
       if (id) {
         const response = await new BasicProvider(`cms/category/update/${id}`).patchRequest(data)
         toast.success("Category Updated Successfully")
-        navigate("/master/category")
+        // navigate("/master/category")
       }
       else {
         const response = await new BasicProvider(`cms/category`).postRequest(data)
@@ -153,7 +153,7 @@ export default function Category() {
 
   const findByType = async (type) => {
     try {
-      const response = await new BasicProvider(`category/type/${type}`).getRequest()
+      const response = await new BasicProvider(`cms/category/type/${type}`).getRequest()
 
 
       if (response?.status == "success") {
@@ -168,7 +168,7 @@ export default function Category() {
   const handleDeleteRegion = async (id) => {
     try {
 
-      const response = await new BasicProvider(`category/multi/delete`, dispatch).deleteRequest({ ids: [id] })
+      const response = await new BasicProvider(`cms/category/multi/delete`, dispatch).deleteRequest({ ids: [id] })
       fetchData()
     } catch (error) {
 

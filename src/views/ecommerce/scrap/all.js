@@ -1,41 +1,47 @@
-import { cilPencil, cilSpreadsheet, cilTrash } from "@coreui/icons";
+import {
+  cilBraille,
+  cilPencil,
+  cilPrint,
+  cilSpreadsheet,
+  cilTrash,
+} from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { CContainer } from "@coreui/react";
-// import moment from 'moment'
+import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-// import SubHeader from "../../../components/custome/SubHeader";
-// import { RowsPerPage } from 'src/constants/variables'
 
-import SubHeader from "../../../components/custome/SubHeader";
+// import SubHeader from "../../components/custome/SubHeader";
 import { DeleteModal } from "../../../helpers/DeleteModal";
 import BasicProvider from "../../../constants/BasicProvider";
-// import { handleSelectedRowChange, setSelectedRowForModule } from 'src/helpers/paginationCookie'
-// import HelperFunction from '../../../helpers/HelperFunctions'
-// import { ShimmerTable } from "react-shimmer-effects";
-// import CustomTooltip from 'src/components/custom/CustomTooltip'
-// import noImage from 'src/assets/images/noImage.png'
 
 import DateTimeHelper from "../../../helpers/DateTimeHepler";
-import moment from "moment";
-// const URL = process.env.REACT_APP_NODE_URL
+import SubHeader from "../../../components/custome/SubHeader";
+import HelperFunctions from "../../../helpers/HelperFunction";
+import paginationRowsPerPage from "../../../constants/paginationRowsPerPage";
+import StatusPrev from "../../../components/StatusPrev";
 
 var subHeaderItems = [
   {
-    name: "Create slider",
-    link: "/slider/create",
+    name: "All scrap",
+    link: "/scrap/all",
+    icon: cilSpreadsheet,
+  },
+  {
+    name: "Create scrap",
+    link: "/scrap/create",
     icon: cilPencil,
   },
   {
-    name: "Trash slider",
-    link: "/slider/trash",
+    name: "Trash scrap",
+    link: "/scrap/trash",
     icon: cilTrash,
   },
 ];
 
-export default function Allsliders() {
+export default function AllScrap() {
   const navigate = useNavigate();
   const [rowPerPage, setRowPerPage] = useState(10);
   const location = useLocation();
@@ -51,7 +57,7 @@ export default function Allsliders() {
   var search = query.get("search") || "";
   let [defaultPage, setDefaultPage] = useState(currentPage);
   const dispatch = useDispatch();
-  const data = useSelector((state) => state?.data?.slider);
+  const data = useSelector((state) => state.data?.scrap);
   const toggleCleared = useSelector((state) => state.toggleCleared);
   const totalCount = useSelector((state) => state.totalCount);
 
@@ -60,8 +66,6 @@ export default function Allsliders() {
     searchParams.set(paramName, page);
     navigate({ search: searchParams.toString() });
   };
-
-  console.log("-=-=-=-data-=-=-=-data", data);
 
   useEffect(() => {
     if (rowPerPage) {
@@ -84,24 +88,28 @@ export default function Allsliders() {
       }
       var response;
       if (performSearch) {
+      
         queryData["page"] = currentPage;
         queryData["count"] = count;
-        // response = await new BasicProvider(`
-        //   customers/onlycustomer?${HelperFunction.convertToQueryString(
-        //     queryData
-        //   )}`).getRequest();
-      } else {
         response = await new BasicProvider(
-          `cms/slider?page=${currentPage}&count=${count}`,
+          `ecommerce/scrap/search?${HelperFunctions.convertToQueryString(
+            queryData
+          )}`,
           dispatch
         ).getRequest();
-      }
-
-      console.log("response", response);
+        dispatch({ type: "set", data: { scrap: response?.data } });
+      } else {
       
+        response = await new BasicProvider(
+          `ecommerce/scrap?page=${currentPage}&count=${count}`,
+          dispatch
+        ).getRequest();
 
-      dispatch({ type: "set", data: { slider: response?.data?.data} });
-      dispatch({ type: "set", totalCount: response.data.total });
+      
+        dispatch({ type: "set", data: { scrap: response?.data?.data } });
+        dispatch({ type: "set", totalCount: response.data.total });
+      }
+      
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -111,7 +119,7 @@ export default function Allsliders() {
 
   useEffect(() => {
     const fetchSelectedRows = async () => {
-      const savedSelectedRows = 10; //await handleSelectedRowChange('customers')
+      const savedSelectedRows = 10; //await handleSelectedRowChange('scraps')
       if (savedSelectedRows && !count) {
         setRowPerPage(savedSelectedRows);
       } else {
@@ -146,31 +154,56 @@ export default function Allsliders() {
 
   const columns = [
     {
-      name: "Image",
+      name: "Name",
       selector: (row) => (
-        <div className="pointer_cursor data_Table_title d-flex py-1">
+        <div
+          className="pointer_cursor data_Table_title d-flex py-1"
+
+          // onClick={() => navigate(/scraps/${row._id}/info)}
+        >
           <div>
-            <div>
-              <img
-                src={
-                  process.env.REACT_APP_NODE_URL + row?.slider[0]?.image?.filepath
-                }
-                height={"50px"}
-                width={"50px"}
-                className="product_image rounded circle"
-              />
-            </div>
+            <div className="product_name">{row?.name}</div>
+            {/* <div className="product_slug"> /{row.slug}</div> */}
           </div>
         </div>
       ),
-      width: "20%",
+      // width: "20%",
     },
 
     {
-      name: "Name",
-      selector: (row) => <div className="product_name">{row?.name}</div>,
+      name: "Mobile",
+      selector: (row) => <div className="data_table_colum">{row.mobile}</div>,
     },
-
+    {
+      name: "Quantity",
+      selector: (row) => (
+        <div className="data_table_colum">
+          {row.quantity || "--"} {row?.unit_type || "--"}
+        </div>
+      ),
+    },
+     {
+      name: "Price",
+      selector: (row) => (
+        <div className="data_table_colum">
+          {row?.sell_price || 0}
+          {process.env.REACT_APP_CURRENCY}
+        </div>
+      ),
+    },
+    {
+      name: "Status",
+      selector: (row) => (
+        <div className="data_table_colum"><StatusPrev scrapData={row} fetchData={fetchData}/> </div>
+      ),
+    },
+    {
+      name: "Address",
+      selector: (row) => (
+        <div className="data_table_colum">{row?.address || "-"}</div>
+      ),
+    },
+   
     {
       name: "Create At",
       selector: (row) => (
@@ -183,13 +216,12 @@ export default function Allsliders() {
     {
       name: "Actions",
       cell: (row) => (
-        <div className="action-btn d-flex gap-3">
-          <div className="edit-btn">
+        <div className="action-btn d-flex gap-2 ">
+          <div className="edit-btn" style={{ cursor: "pointer" }}>
             <CIcon
               className="pointer_cursor"
-              style={{ cursor: "pointer" }}
               icon={cilPencil}
-              onClick={() => navigate(`/cms/slider/${row._id}/edit`)}
+              onClick={() => navigate(`/scrap/${row._id}/edit`)}
             />
           </div>
 
@@ -219,6 +251,7 @@ export default function Allsliders() {
       ...prevState,
       [moduleName]: selectedRows, // Save selected rows for the module
     }));
+
   };
   return (
     <>
@@ -230,15 +263,15 @@ export default function Allsliders() {
         searchInput={search}
         rowPerPage={rowPerPage}
         defaultPage={defaultPage}
-        moduleName="slider"
+        moduleName="scrap"
         deletionType="trash"
       />
 
-      <CContainer fluid>
+      <CContainer>
         {isLoading ? (
           <div className="custom-table-shimmer"></div>
         ) : (
-          <div className="datatable">
+          <div className="">
             <DataTable
               responsive="true"
               columns={columns}
@@ -255,13 +288,13 @@ export default function Allsliders() {
               selectableRows
               selectableRowsHighlight
               highlightOnHover
-              // paginationRowsPerPageOptions={RowsPerPage}
+              paginationRowsPerPageOptions={paginationRowsPerPage} // Add options here
               paginationPerPage={rowPerPage}
               onChangeRowsPerPage={(value) => {
                 count = value;
                 setRowPerPage(value);
                 updatePageQueryParam("count", value);
-                setSelectedRowForModule("slider", value);
+                setSelectedRowForModule("scrap", value);
               }}
               onSelectedRowsChange={(state) => handleRowChange(state)}
               clearSelectedRows={toggleCleared}
@@ -271,7 +304,7 @@ export default function Allsliders() {
         <DeleteModal
           visible={visible}
           userId={userId}
-          moduleName="slider"
+          moduleName="ecommerce/scrap"
           currentPage={currentPage}
           rowPerPage={rowPerPage}
           setVisible={setVisible}

@@ -4,6 +4,7 @@ import CustomerRouters from "./views/user/customer/routes";
 import SettingsRouters from "./views/settings/routes";
 import MasterRouters from "./views/master/routes"
 import CmsRouters from "./views/cms/routes"
+import ScrapRouters from "./views/ecommerce/scrap/routes"
 import React from "react";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
@@ -25,6 +26,7 @@ const routes = [
   // ...ProductRouters,
   ...MasterRouters,
   ...CmsRouters,
+  ...ScrapRouters,
   // =======================================================================
   { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", element: Dashboard },

@@ -39,7 +39,7 @@ export default function Regions() {
 
   const fetchData = async () => {
     try {
-      const response = await new BasicProvider(`region/type/country`).getRequest()
+      const response = await new BasicProvider(`cms/region/type/country`).getRequest()
       if (response?.status == "success") {
         // /region/type/country
         setRegions(response?.data || [])

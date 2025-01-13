@@ -57,7 +57,7 @@ export default function FooterSetting() {
 
     const fetchData = async (api) => {
         try {
-            const response = await new BasicProvider(`setting/${api}`).getRequest();
+            const response = await new BasicProvider(`cms/setting/${api}`).getRequest();
             return response;
         } catch (error) {
             console.error(`Error fetching data for API "${api}":`, error);
@@ -111,10 +111,11 @@ export default function FooterSetting() {
     
         try {
             // Make an API request using BasicProvider
-            const response = await new BasicProvider(`setting/${api}`).postRequest(updatedata);
+            const response = await new BasicProvider(`cms/setting/${api}`).postRequest(updatedata);
     
             // Handle success response
             console.log('Response:', response);
+            // toast.success('Data submitted successfully');
             // Optionally, show a success notification to the user
         } catch (error) {
             // Handle errors (log and notify the user)

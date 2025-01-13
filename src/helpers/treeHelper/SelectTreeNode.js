@@ -1,15 +1,13 @@
-import { cilTrash, cilArrowDown, cilArrowRight, cilCaretBottom, cilCaretRight } from "@coreui/icons";
+import { cilCaretBottom, cilCaretRight, cilCheckCircle } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 
-import React from "react";
-
-const TreeNode = ({
+const SelectTreeNode = ({
     nodes,
     level = 0,
-    handleDeleteRegion,
-    expandedNodes,
     handleToggleExpand,
-    navigatere,
+    selectedCategoryId,
+    handleSelectCategory,
+    expandedNodes,  // Accept expandedNodes as a prop
 }) => {
     if (!Array.isArray(nodes)) {
         console.error("The 'nodes' prop should be an array.");
@@ -17,12 +15,11 @@ const TreeNode = ({
     }
 
     return (
-        <div className={`tree-container ${level > 0 ? "has-parent" : ""} ml-lg-5 `}>
+        <div className={`tree-container ${level > 0 ? "has-parent" : ""} ml-lg-5`}>
             {nodes.map((node) => (
                 <div key={node._id} className="tree-item">
                     <div
-                        className={`tree-label flex  ${expandedNodes.includes(node._id) ? "expanded" : ""
-                            }`}
+                        className={`tree-label flex ${expandedNodes.includes(node._id) ? "expanded" : ""}`}
                     >
                         {/* Toggle Expand Icon */}
                         <span
@@ -31,10 +28,8 @@ const TreeNode = ({
                         >
                             {expandedNodes.includes(node._id) ? (
                                 <CIcon icon={cilCaretBottom} />
-
                             ) : (
                                 <CIcon icon={cilCaretRight} />
-
                             )}
                         </span>
 
@@ -42,7 +37,6 @@ const TreeNode = ({
                         <span
                             className="tree-icon text-muted"
                             style={{ cursor: "pointer" }}
-                            onClick={() => navigatere(node?._id)}
                         >
                             📁
                         </span>
@@ -50,19 +44,16 @@ const TreeNode = ({
                         {/* Node Name */}
                         <span
                             className="tree-name"
-                            onClick={() => navigatere(node?._id)}
+                            onClick={() => handleSelectCategory(node?._id)}
                             style={{ cursor: "pointer" }}
                         >
                             {node?.name}
                         </span>
 
-                        {/* Delete Icon */}
-                        <span
-                            className="tree-delete "
-                            onClick={() => handleDeleteRegion(node?._id)}
-                        >
-                            <CIcon className="pointer_cursor" icon={cilTrash} />
-                        </span>
+                        {/* Selected Icon (Checkmark) */}
+                        {selectedCategoryId === node._id && (
+                            <CIcon icon={cilCheckCircle} className="selected-icon" />
+                        )}
                     </div>
 
                     {/* Child Nodes */}
@@ -70,13 +61,13 @@ const TreeNode = ({
                         Array.isArray(node.children) &&
                         node.children.length > 0 && (
                             <div className="tree-children">
-                                <TreeNode
+                                <SelectTreeNode
                                     nodes={node.children}
                                     level={level + 1}
                                     expandedNodes={expandedNodes}
                                     handleToggleExpand={handleToggleExpand}
-                                    navigatere={navigatere}
-                                    handleDeleteRegion={handleDeleteRegion}
+                                    handleSelectCategory={handleSelectCategory}
+                                    selectedCategoryId={selectedCategoryId}
                                 />
                             </div>
                         )}
@@ -86,4 +77,4 @@ const TreeNode = ({
     );
 };
 
-export default TreeNode;
+export default SelectTreeNode;

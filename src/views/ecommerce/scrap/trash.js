@@ -1,4 +1,4 @@
-import { cilPencil, cilSpreadsheet, cilTrash } from "@coreui/icons";
+import { cilPencil, cilReload, cilSpreadsheet, cilTrash } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import { CContainer } from "@coreui/react";
 // import moment from 'moment'
@@ -6,36 +6,28 @@ import { useCallback, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-// import SubHeader from "../../../components/custome/SubHeader";
-// import { RowsPerPage } from 'src/constants/variables'
 
 import SubHeader from "../../../components/custome/SubHeader";
 import { DeleteModal } from "../../../helpers/DeleteModal";
 import BasicProvider from "../../../constants/BasicProvider";
-// import { handleSelectedRowChange, setSelectedRowForModule } from 'src/helpers/paginationCookie'
-// import HelperFunction from '../../../helpers/HelperFunctions'
-// import { ShimmerTable } from "react-shimmer-effects";
-// import CustomTooltip from 'src/components/custom/CustomTooltip'
-// import noImage from 'src/assets/images/noImage.png'
 
 import DateTimeHelper from "../../../helpers/DateTimeHepler";
-import moment from "moment";
 // const URL = process.env.REACT_APP_NODE_URL
 
 var subHeaderItems = [
   {
-    name: "Create slider",
-    link: "/slider/create",
-    icon: cilPencil,
+    name: "All scrap",
+    link: "/scrap/all",
+    icon: cilSpreadsheet,
   },
   {
-    name: "Trash slider",
-    link: "/slider/trash",
-    icon: cilTrash,
+    name: "Create scrap",
+    link: "/scrap/create",
+    icon: cilPencil,
   },
 ];
 
-export default function Allsliders() {
+export default function ScrapTrash() {
   const navigate = useNavigate();
   const [rowPerPage, setRowPerPage] = useState(10);
   const location = useLocation();
@@ -51,7 +43,7 @@ export default function Allsliders() {
   var search = query.get("search") || "";
   let [defaultPage, setDefaultPage] = useState(currentPage);
   const dispatch = useDispatch();
-  const data = useSelector((state) => state?.data?.slider);
+  const data = useSelector((state) => state.data?.scrap_trash);
   const toggleCleared = useSelector((state) => state.toggleCleared);
   const totalCount = useSelector((state) => state.totalCount);
 
@@ -61,7 +53,7 @@ export default function Allsliders() {
     navigate({ search: searchParams.toString() });
   };
 
-  console.log("-=-=-=-data-=-=-=-data", data);
+  // console.log("data=========>", data);
 
   useEffect(() => {
     if (rowPerPage) {
@@ -83,6 +75,7 @@ export default function Allsliders() {
         }
       }
       var response;
+      // console.log(performSearch);
       if (performSearch) {
         queryData["page"] = currentPage;
         queryData["count"] = count;
@@ -90,17 +83,16 @@ export default function Allsliders() {
         //   customers/onlycustomer?${HelperFunction.convertToQueryString(
         //     queryData
         //   )}`).getRequest();
+        // console.log(response);
       } else {
         response = await new BasicProvider(
-          `cms/slider?page=${currentPage}&count=${count}`,
+          `ecommerce/scrap/trash?page=${currentPage}&count=${count}`,
           dispatch
         ).getRequest();
       }
-
       console.log("response", response);
-      
 
-      dispatch({ type: "set", data: { slider: response?.data?.data} });
+      dispatch({ type: "set", data: { scrap_trash: response?.data?.data } });
       dispatch({ type: "set", totalCount: response.data.total });
       setIsLoading(false);
     } catch (error) {
@@ -144,38 +136,63 @@ export default function Allsliders() {
     navigate({ search: "" });
   };
 
+  const restore = async (id) => {
+    const responce = await new BasicProvider(
+      `ecommerce/scrap/multi/restore`,
+      dispatch
+    ).patchRequest({
+      ids: [id],
+    });
+
+    fetchData();
+  };
+
   const columns = [
     {
-      name: "Image",
+      name: "Name",
       selector: (row) => (
-        <div className="pointer_cursor data_Table_title d-flex py-1">
+        <div
+          className="pointer_cursor data_Table_title d-flex py-1"
+
+          // onClick={() => navigate(/customers/${row._id}/info)}
+        >
           <div>
-            <div>
-              <img
-                src={
-                  process.env.REACT_APP_NODE_URL + row?.slider[0]?.image?.filepath
-                }
-                height={"50px"}
-                width={"50px"}
-                className="product_image rounded circle"
-              />
+            <div className="product_name">
+              {row?.first_name} {row?.last_name}
             </div>
+            {/* <div className="product_slug"> /{row.slug}</div> */}
           </div>
         </div>
       ),
-      width: "20%",
+      // width: "20%",
     },
 
     {
-      name: "Name",
-      selector: (row) => <div className="product_name">{row?.name}</div>,
+      name: "Mobile",
+      selector: (row) => <div className="data_table_colum">{row.mobile}</div>,
     },
-
     {
-      name: "Create At",
+      name: "Work Date",
       selector: (row) => (
         <div className="data_table_colum">
-          {moment(row?.createdAt).fromNow()}
+          {DateTimeHelper.formatDate(row.work_date)}
+        </div>
+      ),
+    },
+    {
+      name: "Price",
+      selector: (row) => (
+        <div className="data_table_colum">
+          {row.price}
+          {process.env.REACT_APP_CURRENCY}
+        </div>
+      ),
+    },
+    {
+      name: "Delete At",
+      selector: (row) => (
+        <div className="data_table_colum">
+          {DateTimeHelper.formatDate(row.delete_at)}
         </div>
       ),
     },
@@ -187,13 +204,12 @@ export default function Allsliders() {
           <div className="edit-btn">
             <CIcon
               className="pointer_cursor"
-              style={{ cursor: "pointer" }}
-              icon={cilPencil}
-              onClick={() => navigate(`/cms/slider/${row._id}/edit`)}
+              icon={cilReload}
+              onClick={() => restore(row?._id)}
             />
           </div>
 
-          <div className="delet-btn" style={{ cursor: "pointer" }}>
+          <div className="delet-btn">
             <CIcon
               className="pointer_cursor"
               icon={cilTrash}
@@ -211,15 +227,6 @@ export default function Allsliders() {
     },
   ];
 
-  const [selectedRowsPerModule, setSelectedRowsPerModule] = useState({});
-
-  // Function to set selected rows for a specific module
-  const setSelectedRowForModule = (moduleName, selectedRows) => {
-    setSelectedRowsPerModule((prevState) => ({
-      ...prevState,
-      [moduleName]: selectedRows, // Save selected rows for the module
-    }));
-  };
   return (
     <>
       <SubHeader
@@ -230,13 +237,16 @@ export default function Allsliders() {
         searchInput={search}
         rowPerPage={rowPerPage}
         defaultPage={defaultPage}
-        moduleName="slider"
-        deletionType="trash"
+        moduleName="ecommerce/scrap"
+        deletionType="delete"
       />
 
       <CContainer fluid>
+        {/* {rowPerPage && data && ( */}
         {isLoading ? (
-          <div className="custom-table-shimmer"></div>
+          <div className="custom-table-shimmer">
+            {/* <ShimmerTable row={10} /> */}
+          </div>
         ) : (
           <div className="datatable">
             <DataTable
@@ -261,7 +271,7 @@ export default function Allsliders() {
                 count = value;
                 setRowPerPage(value);
                 updatePageQueryParam("count", value);
-                setSelectedRowForModule("slider", value);
+                // setSelectedRowForModule('customers', value)
               }}
               onSelectedRowsChange={(state) => handleRowChange(state)}
               clearSelectedRows={toggleCleared}
@@ -271,11 +281,11 @@ export default function Allsliders() {
         <DeleteModal
           visible={visible}
           userId={userId}
-          moduleName="slider"
+          moduleName="ecommerce/scrap"
           currentPage={currentPage}
           rowPerPage={rowPerPage}
           setVisible={setVisible}
-          deletionType="trash"
+          deletionType="delete"
           handleClose={() => setVisible(false)}
         />
       </CContainer>

@@ -63,7 +63,7 @@ const Login = () => {
               <CCard className="p-4">
                 <CCardBody>
                   <CForm onSubmit={handleSubmit}>
-                    <h1>Welcome To AOK</h1>
+                    <h1>Welcome To SCRAPIFY</h1>
                     <p className="text-body-secondary">
                       Sign In to your account
                     </p>
