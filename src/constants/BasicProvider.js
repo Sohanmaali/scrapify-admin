@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 class BasicProvider {
   constructor(url, dispatch) {
     this.url = process.env.REACT_APP_NODE_URL + "/api/" + url;
-    // this.url = process.env.REACT_APP_NODE_URL + "/api/" + url;
 
     this.dispatch = dispatch;
   }
@@ -24,6 +23,9 @@ class BasicProvider {
 
   async postRequest(data) {
     try {
+
+      console.log("--=-=-=-==this.url", this.url);
+      
       const response = await axios.post(this.url, data, this.getHeaders(data));
       return this.processResponse(response);
     } catch (error) {
