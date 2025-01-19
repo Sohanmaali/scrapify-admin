@@ -56,15 +56,25 @@ export default function CreateCustomer() {
         dispatch
       ).getRequest();
 
-      console.log("-=-==-=-=response=-=-=-", response);
-      
       if (response?.status === "success") {
-        setInitialValues(response.data);
+        setInitialValues({
+          name: response.data?.name,
+          mobile: response.data?.mobile,
+          role: response.data?.role,
+          email: response.data?.email,
+          address: response.data?.address,
+          featured_image: response.data?.featured_image,
+
+          city: response.data?.city._id,
+          state: response.data?.state?._id,
+          country: response.data?.country?._id,
+        });
       }
     } catch (error) {
       toast.error("Error fetching data");
     }
   };
+  console.log("-=-=====-=-=initialvalues", initialValues);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -95,6 +105,10 @@ export default function CreateCustomer() {
       toast.error("Passwords do not match");
       setIsLoading(false);
       return;
+    }
+    if (id) {
+      delete validationRules.confirm_password;
+      delete validationRules.password;
     }
 
     const formData = submitHalper(initialValues, validationRules, dispatch);

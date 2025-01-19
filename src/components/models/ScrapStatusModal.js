@@ -20,7 +20,7 @@ export const ScrapStatusModal = ({
   const loadOptions = async (inputValue) => {
     try {
       const response = await new BasicProvider(
-        `customer/search?search=${inputValue}&count=10`
+        `customer/employee/search?search=${inputValue}&count=10`
       ).getRequest();
       if (response.status === "success") {
         const data = response.data.map((category) => ({

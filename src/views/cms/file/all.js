@@ -1,5 +1,6 @@
 import {
   cilBraille,
+  cilCloudDownload,
   cilPencil,
   cilPrint,
   cilSpreadsheet,
@@ -23,24 +24,6 @@ import HelperFunctions from "../../../helpers/HelperFunction";
 import paginationRowsPerPage from "../../../constants/paginationRowsPerPage";
 import StatusPrev from "../../../components/StatusPrev";
 
-var subHeaderItems = [
-  {
-    name: "All scrap",
-    link: "/scrap/all",
-    icon: cilSpreadsheet,
-  },
-  {
-    name: "Create scrap",
-    link: "/scrap/create",
-    icon: cilPencil,
-  },
-  {
-    name: "Trash scrap",
-    link: "/scrap/trash",
-    icon: cilTrash,
-  },
-];
-
 export default function AllScrap() {
   const navigate = useNavigate();
   const [rowPerPage, setRowPerPage] = useState(10);
@@ -57,7 +40,7 @@ export default function AllScrap() {
   var search = query.get("search") || "";
   let [defaultPage, setDefaultPage] = useState(currentPage);
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data?.scrap);
+  const data = useSelector((state) => state.data?.file);
   const toggleCleared = useSelector((state) => state.toggleCleared);
   const totalCount = useSelector((state) => state.totalCount);
 
@@ -91,19 +74,19 @@ export default function AllScrap() {
         queryData["page"] = currentPage;
         queryData["count"] = count;
         response = await new BasicProvider(
-          `ecommerce/scrap/search?${HelperFunctions.convertToQueryString(
+          `cms/file/search?${HelperFunctions.convertToQueryString(
             queryData
           )}`,
           dispatch
         ).getRequest();
-        dispatch({ type: "set", data: { scrap: response?.data } });
+        dispatch({ type: "set", data: { file: response?.data } });
       } else {
         response = await new BasicProvider(
-          `ecommerce/scrap?page=${currentPage}&count=${count}`,
+          `cms/file?page=${currentPage}&count=${count}`,
           dispatch
         ).getRequest();
 
-        dispatch({ type: "set", data: { scrap: response?.data?.data } });
+        dispatch({ type: "set", data: { file: response?.data?.data } });
         dispatch({ type: "set", totalCount: response.data.total });
       }
 
@@ -116,7 +99,7 @@ export default function AllScrap() {
 
   useEffect(() => {
     const fetchSelectedRows = async () => {
-      const savedSelectedRows = 10; //await handleSelectedRowChange('scraps')
+      const savedSelectedRows = 10; //await handleSelectedRowChange('files')
       if (savedSelectedRows && !count) {
         setRowPerPage(savedSelectedRows);
       } else {
@@ -151,7 +134,7 @@ export default function AllScrap() {
 
   const columns = [
     {
-      name: "Name",
+      name: "File Image",
       selector: (row) => (
         <div className="pointer_cursor data_Table_title d-flex py-1">
           <div>
@@ -164,23 +147,11 @@ export default function AllScrap() {
     },
 
     {
-      name: "Customer",
-      selector: (row) => (
-        <div className="pointer_cursor data_Table_title d-flex py-1">
-          <div>
-            <div className="product_name">{row?.customer?.name}</div>
-          </div>
-        </div>
-      ),
-      // width: "20%",
-    },
-
-    {
-      name: "Mobile",
+      name: "Name",
       selector: (row) => <div className="data_table_colum">{row.mobile}</div>,
     },
     {
-      name: "Quantity",
+      name: "Size",
       selector: (row) => (
         <div className="data_table_colum">
           {row.quantity || "--"} {row?.unit_type || "--"}
@@ -194,20 +165,6 @@ export default function AllScrap() {
           {row?.sell_price || 0}
           {process.env.REACT_APP_CURRENCY}
         </div>
-      ),
-    },
-    {
-      name: "Status",
-      selector: (row) => (
-        <div className="data_table_colum">
-          <StatusPrev scrapData={row} fetchData={fetchData} />{" "}
-        </div>
-      ),
-    },
-    {
-      name: "Address",
-      selector: (row) => (
-        <div className="data_table_colum">{row?.address || "-"}</div>
       ),
     },
 
@@ -227,8 +184,8 @@ export default function AllScrap() {
           <div className="edit-btn" style={{ cursor: "pointer" }}>
             <CIcon
               className="pointer_cursor"
-              icon={cilPencil}
-              onClick={() => navigate(`/scrap/${row._id}/edit`)}
+              icon={cilCloudDownload}
+              onClick={() => navigate(`/file/${row._id}/edit`)}
             />
           </div>
 
@@ -262,15 +219,15 @@ export default function AllScrap() {
   return (
     <>
       <SubHeader
-        subHeaderItems={subHeaderItems}
-        handleFilter={(search) => handleFilter(search)}
-        setSearchCurrentPage={setSearchCurrentPage}
-        onReset={() => handleFilterReset()}
-        searchInput={search}
-        rowPerPage={rowPerPage}
-        defaultPage={defaultPage}
-        moduleName="scrap"
-        deletionType="trash"
+      // subHeaderItems={subHeaderItems}
+      // handleFilter={(search) => handleFilter(search)}
+      // setSearchCurrentPage={setSearchCurrentPage}
+      // onReset={() => handleFilterReset()}
+      // searchInput={search}
+      // rowPerPage={rowPerPage}
+      // defaultPage={defaultPage}
+      // moduleName="file"
+      // deletionType="trash"
       />
 
       <CContainer>
@@ -300,7 +257,7 @@ export default function AllScrap() {
                 count = value;
                 setRowPerPage(value);
                 updatePageQueryParam("count", value);
-                setSelectedRowForModule("scrap", value);
+                setSelectedRowForModule("file", value);
               }}
               onSelectedRowsChange={(state) => handleRowChange(state)}
               clearSelectedRows={toggleCleared}
@@ -310,7 +267,7 @@ export default function AllScrap() {
         <DeleteModal
           visible={visible}
           userId={userId}
-          moduleName="ecommerce/scrap"
+          moduleName="cms/file"
           currentPage={currentPage}
           rowPerPage={rowPerPage}
           setVisible={setVisible}

@@ -26,7 +26,6 @@ export const submitHalper = (initialValues, validationRules, dispatch) => {
   });
 
   if (Object.keys(errors).length > 0) {
-    // Display each error as a toast notification
     Object.values(errors).forEach((error) => toast.error(error));
     dispatch({ type: "SET_ERRORS", payload: errors });
     return false; // Validation failed
@@ -34,9 +33,6 @@ export const submitHalper = (initialValues, validationRules, dispatch) => {
 
   // No errors, return the form values in FormData
   const formData = new FormData();
-  // Object.keys(initialValues).forEach((key) => {
-  //   formData.append(key, initialValues[key]);
-  // });
 
   Object.keys(initialValues).forEach((key) => {
     if (key === "gallery" && Array.isArray(initialValues[key])) {
@@ -47,6 +43,12 @@ export const submitHalper = (initialValues, validationRules, dispatch) => {
           formData.append(`exist_gallery`, JSON.stringify(item));
         }
       });
+    } else if (key === "featured_image") {
+      if (initialValues[key] instanceof File) {
+        formData.append(`${key}`, initialValues[key]);
+      } else {
+        formData.append(`featured_image`, JSON.stringify(initialValues[key]));
+      }
     } else {
       formData.append(key, initialValues[key]);
     }

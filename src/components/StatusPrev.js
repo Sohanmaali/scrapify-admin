@@ -22,7 +22,7 @@ export default function StatusPrev({ scrapData ,fetchData}) {
   const handleSubmit = async () => {
     try {
       const response = await new BasicProvider(
-        `ecommerce/scrap/update/${scrapData._id}`
+        `ecommerce/scrap/update/${scrapData._id}?assign=assign_work`
       ).patchRequest(initialData);
       if (response?.status === "success") {
         setVisible(false);
@@ -32,9 +32,7 @@ export default function StatusPrev({ scrapData ,fetchData}) {
       console.error("Error fetching data:", error);
     }
   };
-
-  console.log("-=-=-=--=scrapData-=--=",scrapData);
-  
+ 
 
   useEffect(() => {
     fetchStatusData();

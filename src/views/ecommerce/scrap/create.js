@@ -81,20 +81,20 @@ export default function CreateCustomer() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
-  const { data, loading, error, updatedValues } = useFetchData({
-    url: `ecommerce/scrap/show/${id}`,
-    initialValues,
-    dispatch,
-  });
-  useEffect(() => {
-    if (data) {
-      setInitialValues(data);
-    }
-  }, [data]); // Only run when 'data' changes
-  
+  // const { data, loading, error, updatedValues } = useFetchData({
+  //   url: `ecommerce/scrap/show/${id}`,
+  //   initialValues,
+  //   dispatch,
+  // });
   // useEffect(() => {
-  //   if (id) fetchData();
-  // }, [id]);
+  //   if (data) {
+  //     setInitialValues(data);
+  //   }
+  // }, [data]); // Only run when 'data' changes
+
+  useEffect(() => {
+    if (id) fetchData();
+  }, [id]);
 
   const fetchData = async () => {
     try {
@@ -114,6 +114,10 @@ export default function CreateCustomer() {
           customer: {
             label: response.data?.customer?.name || "",
             value: response.data?.customer?._id || "",
+          },
+          category: {
+            label: response.data?.category?.name || "",
+            value: response.data?.category?._id || "",
           },
         }));
       }
@@ -141,15 +145,14 @@ export default function CreateCustomer() {
     }
   };
 
-  const loadOptions = async (inputValue) => {
+  const loadOptions = async (url) => {
     try {
-      const response = await new BasicProvider(
-        `customer/search?search=${inputValue}&count=10`
-      ).getRequest();
+      const response = await new BasicProvider(url).getRequest();
       if (response.status === "success") {
-        const data = response.data.map((category) => ({
-          label: category.name, // The name of the category
-          value: category._id, // The id of the category
+        // Modify to handle multiple API responses dynamically
+        const data = response.data.map((item) => ({
+          label: item.name, // or any other attribute depending on your API response
+          value: item._id, // or any other unique identifier
         }));
         return data || [];
       }
@@ -159,12 +162,18 @@ export default function CreateCustomer() {
     }
   };
 
+  console.log("-=-=-=-=-initialValues", initialValues);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     const formData = submitHalper(
-      { ...initialValues, customer: initialValues.customer?.value },
+      {
+        ...initialValues,
+        customer: initialValues.customer?.value,
+        category: initialValues.category?.value,
+      },
       validationRules,
       dispatch
     );
@@ -259,7 +268,7 @@ export default function CreateCustomer() {
                     type="date"
                     name="available_date"
                     value={
-                      new Date(initialValues?.available_date||null)
+                      new Date(initialValues?.available_date || null)
                         .toISOString()
                         .split("T")[0]
                     }
@@ -294,7 +303,11 @@ export default function CreateCustomer() {
                 <CCardBody>
                   <AsyncSelect
                     cacheOptions
-                    loadOptions={loadOptions}
+                    loadOptions={(inputValue) =>
+                      loadOptions(
+                        `customer/search?search=${inputValue}&count=10`
+                      )
+                    }
                     defaultOptions
                     value={initialValues?.customer || ""} // Show selected categories in AsyncSelect
                     onChange={(value) =>
@@ -395,12 +408,27 @@ export default function CreateCustomer() {
                 </CCardHeader>
                 <CCardBody>
                   {/* <SelectTreeNode /> */}
-                  <SelectTreeNode
+                  {/* <SelectTreeNode
                     nodes={categories}
                     expandedNodes={expandedNodes}
                     handleToggleExpand={handleToggleExpand}
                     selectedCategoryId={initialValues?.category}
                     handleSelectCategory={handleSelectCategory}
+                  /> */}
+                  <AsyncSelect
+                    cacheOptions
+                    loadOptions={(inputValue) =>
+                      loadOptions(
+                        `cms/category/search?search=${inputValue}&count=10`
+                      )
+                    }
+                    defaultOptions
+                    value={initialValues?.category || ""} // Show selected categories in AsyncSelect
+                    onChange={(value) =>
+                      setInitialValues((prev) => ({ ...prev, category: value }))
+                    }
+                    name="customer"
+                    placeholder="Search and select Customer"
                   />
                 </CCardBody>
               </CCard>

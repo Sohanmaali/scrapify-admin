@@ -93,7 +93,7 @@ const _nav = [
   {
     component: CNavItem,
     name: "Files",
-    to: "/cms/files",
+    to: "/cms/files/all",
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
   },
   {
