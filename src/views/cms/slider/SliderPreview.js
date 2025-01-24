@@ -29,7 +29,7 @@
 //                       slider?.image
 //                         ? slider?.image instanceof File
 //                           ? URL.createObjectURL(slider?.image)
-//                           : `${process.env.REACT_APP_NODE_URL}/${slider?.image?.filepath}`
+//                           : `${slider?.image?.filepath}`
 //                         : "/assert/images/noimage.png"
 //                     }
 //                     alt={`Preview ${index}`}
@@ -110,7 +110,7 @@ const ImagePreview = ({ initialvalues, setInitialvalues }) => {
                       slider?.image
                         ? slider?.image instanceof File
                           ? URL.createObjectURL(slider?.image)
-                          : `${process.env.REACT_APP_NODE_URL}/${slider?.image?.filepath}`
+                          : `${slider?.image?.filepath}`
                         : "/assert/images/noimage.png"
                     }
                     alt={`Preview ${index}`}

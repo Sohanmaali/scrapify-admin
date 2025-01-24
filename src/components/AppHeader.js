@@ -145,7 +145,7 @@ const AppHeader = () => {
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
           <div className="d-flex align-items-center">
-            <div className="h6">Hii, {userData?.first_name}</div>
+            <div className="h6">Hii, {userData?.name}</div>
           </div>
           <AppHeaderDropdown />
         </CHeaderNav>

@@ -14,7 +14,7 @@
 
 //   const images = Array.isArray(initialValues?.gallery) && initialValues?.gallery.length > 0
 //   ? initialValues.gallery.map((image) =>
-//       image instanceof File ? URL.createObjectURL(image) : `${process.env.REACT_APP_NODE_URL}/${image?.filepath}`
+//       image instanceof File ? URL.createObjectURL(image) : `${image?.filepath}`
 //     )
 //   : [];
 
@@ -51,7 +51,7 @@ const GalleryPreview = ({ initialValues, setInitialvalues }) => {
       const updatedImages = initialValues.gallery.map((image) =>
         image instanceof File
           ? URL.createObjectURL(image)
-          : `${process.env.REACT_APP_NODE_URL}/${image?.filepath}`
+          : `${image?.filepath}`
       );
       setImages(updatedImages);
     }
