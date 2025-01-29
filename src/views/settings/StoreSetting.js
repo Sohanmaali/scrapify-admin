@@ -14,6 +14,7 @@ import {
 } from "@coreui/react";
 import AsyncSelect from "react-select/async";
 import BasicProvider from "../../constants/BasicProvider";
+import { toast } from "react-toastify";
 
 export default function StoreSetting() {
   const [selectedCategory, setSelectedCategory] = useState([]); // Ensure it's an array
@@ -47,9 +48,7 @@ export default function StoreSetting() {
           ? selectedCategory.map((option) => option.value)
           : [],
       });
-      if (response) {
-        console.log("Submitted successfully:", response);
-      }
+      toast.success("Data submitted successfully");
     } catch (error) {
       console.error("ERROR", error);
     }

@@ -5,6 +5,7 @@ import SettingsRouters from "./views/settings/routes";
 import MasterRouters from "./views/master/routes"
 import CmsRouters from "./views/cms/routes"
 import ScrapRouters from "./views/ecommerce/scrap/routes"
+import ContactRouter from "./views/contact/routes"
 import React from "react";
 
 const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
@@ -23,6 +24,7 @@ const routes = [
   ...AdminRouters,
   ...CustomerRouters,
   ...SettingsRouters,
+  ...ContactRouter,
   // ...ProductRouters,
   ...MasterRouters,
   ...CmsRouters,

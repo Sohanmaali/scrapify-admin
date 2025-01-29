@@ -39,7 +39,7 @@ export default function Regions() {
 
   const fetchData = async () => {
     try {
-      const response = await new BasicProvider(`cms/region/type/country`).getRequest()
+      const response = await new BasicProvider(`cms/region/country`).getRequest()
       if (response?.status == "success") {
         // /region/type/country
         setRegions(response?.data || [])
@@ -117,6 +117,7 @@ export default function Regions() {
       prev.includes(nodeId) ? prev.filter((id) => id !== nodeId) : [...prev, nodeId]
     )
   }
+ console.log("-=-=-=--regions-=-==",regions);
  
   return (
     <>
@@ -155,13 +156,7 @@ export default function Regions() {
                     <option value={"city"}> City</option>
                   </CFormSelect>
                 </div>
-                {/* {initialvalues?.type && initialvalues?.type != "country" && <div>
-                  <CFormLabel className='mt-2'>Parent Region <span className='text-danger'>*</span></CFormLabel>
-                  <CFormSelect name='parent' value={initialvalues?.parent} onChange={handleChange} >
-                    <option>Region</option>
-                    {regions?.length > 0 && regions.map((region, idx) => (<option key={idx} value={region?._id}>{region?.name}</option>))}
-                  </CFormSelect>
-                </div>} */}
+
                 {initialvalues?.type && (
                   <div>
                     {initialvalues?.type == "state" && (

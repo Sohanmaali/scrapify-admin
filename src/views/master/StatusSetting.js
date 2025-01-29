@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import SubHeader from '../../components/custome/SubHeader';
+import React, { useCallback, useEffect, useState } from "react";
+import SubHeader from "../../components/custome/SubHeader";
 import {
   CCard,
   CCardBody,
@@ -13,29 +13,28 @@ import {
   CRow,
   CButton,
   CForm,
-} from '@coreui/react';
-import BasicProvider from '../../constants/BasicProvider';
-import { toast } from 'react-toastify';
-import DataTable from 'react-data-table-component';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
-import CIcon from '@coreui/icons-react';
-import { cilPencil, cilTrash } from '@coreui/icons';
-import useUpdatePageQueryParam from '../../hooks/useUpdatePageQueryParam';
+} from "@coreui/react";
+import BasicProvider from "../../constants/BasicProvider";
+import { toast } from "react-toastify";
+import DataTable from "react-data-table-component";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import CIcon from "@coreui/icons-react";
+import { cilPencil, cilTrash } from "@coreui/icons";
+import useUpdatePageQueryParam from "../../hooks/useUpdatePageQueryParam";
 
 export default function StatusSetting() {
   // State to manage form input values
   const [statusData, setStatusData] = useState({
-    name: '',
-    slug: '',
-    color: '',
+    name: "",
+    slug: "",
+    color: "",
   });
 
   const { id } = useParams();
 
   console.log("id", id);
-
 
   // Handle input changes
   const handleChange = (e) => {
@@ -47,29 +46,30 @@ export default function StatusSetting() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
-      const response = await new BasicProvider(`status`).postRequest(statusData);
+      const response = await new BasicProvider(`status`).postRequest(
+        statusData
+      );
 
       toast.success("Status created successfully");
       setStatusData({
-        name: '',
-        slug: '',
-        color: '',
+        name: "",
+        slug: "",
+        color: "",
       });
 
       fetchData();
     } catch (error) {
-
       toast.error("Error creating status");
       console.error("ERROR", error);
-
     }
   };
 
   const fetchById = async () => {
     try {
-      const response = await new BasicProvider(`status/show/${id}`).getRequest();
-       if (response?.status === "success") setStatusData(response?.data);
+      const response = await new BasicProvider(
+        `status/show/${id}`
+      ).getRequest();
+      if (response?.status === "success") setStatusData(response?.data);
     } catch (error) {
       console.error("ERROR", error);
       toast.error("Error fetching data");
@@ -79,7 +79,6 @@ export default function StatusSetting() {
   useEffect(() => {
     if (id) fetchById();
   }, [id]);
-
 
   // ==============================================================
   const navigate = useNavigate();
@@ -113,7 +112,6 @@ export default function StatusSetting() {
   useEffect(() => {
     if (rowPerPage) {
       fetchData();
-
     }
   }, [currentPage, rowPerPage, searchcurrentPage, search]);
 
@@ -133,7 +131,6 @@ export default function StatusSetting() {
       if (performSearch) {
         queryData["page"] = currentPage;
         queryData["count"] = count;
-
       } else {
         console.log("calling");
 
@@ -192,13 +189,9 @@ export default function StatusSetting() {
     {
       name: "Name",
       selector: (row) => (
-        <div
-          className="pointer_cursor data_Table_title d-flex py-1"
-        >
+        <div className="pointer_cursor data_Table_title d-flex py-1">
           <div>
-            <div className="product_name">
-              {row?.name}
-            </div>
+            <div className="product_name">{row?.name}</div>
           </div>
         </div>
       ),
@@ -212,16 +205,33 @@ export default function StatusSetting() {
     },
     {
       name: "Status",
-      selector: (row) => (<div className={`data_table_colum badge bg-${row?.color} `} style={{ width: "100px", height: "20px", padding: "5px", textTransform: "capitalize", color: "white", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "15px", border: "1px solid #fff" }}>{row.color}</div>),
+      selector: (row) => (
+        <div
+          className={`data_table_colum badge bg-${row?.color} `}
+          style={{
+            width: "100px",
+            height: "20px",
+            padding: "5px",
+            textTransform: "capitalize",
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "15px",
+            border: "1px solid #fff",
+          }}
+        >
+          {row.color}
+        </div>
+      ),
       center: true,
-
     },
 
     {
       name: "Create At",
       selector: (row) => (
         <div className="data_table_colum">
-          {moment(row?.create_at).fromNow()}
+          {moment(row?.createdAt).fromNow()}
         </div>
       ),
       center: true,
@@ -236,17 +246,6 @@ export default function StatusSetting() {
               className="pointer_cursor"
               icon={cilPencil}
               onClick={() => navigate(`/master/status/${row._id}/edit`)}
-            />
-          </div>
-
-          <div className="delet-btn">
-            <CIcon
-              className="pointer_cursor"
-              icon={cilTrash}
-              onClick={() => {
-                setVisible(true);
-                setuserId([row._id]);
-              }}
             />
           </div>
         </div>
@@ -265,7 +264,6 @@ export default function StatusSetting() {
       ...prevState,
       [moduleName]: selectedRows, // Save selected rows for the module
     }));
-
   };
   // ==============================================================
   return (
@@ -286,16 +284,15 @@ export default function StatusSetting() {
                     </CFormLabel>
                     <CFormInput
                       name="name"
-                      placeholder='Enter status name'
+                      placeholder="Enter status name"
                       value={statusData.name}
                       onChange={handleChange}
-
                     />
                   </div>
                   <div className="mb-3">
                     <CFormLabel>Slug</CFormLabel>
                     <CFormInput
-                      placeholder='Enter slug'
+                      placeholder="Enter slug"
                       name="slug"
                       value={statusData.slug}
                       onChange={handleChange}
@@ -309,7 +306,6 @@ export default function StatusSetting() {
                       name="color"
                       value={statusData.color}
                       onChange={handleChange}
-
                     >
                       <option value="">Select color</option>
                       <option value="danger">Danger</option>
@@ -319,19 +315,23 @@ export default function StatusSetting() {
                       <option value="warning">Warning</option>
                     </CFormSelect>
                   </div>
-                  <div className='d-flex justify-content-center gap-5'>
+                  <div className="d-flex justify-content-center gap-5">
                     <CButton type="submit" color="success">
                       Save
                     </CButton>
 
-                    <CButton type="reset" color="danger" onClick={() => {
-                      setStatusData({
-                        name: '',
-                        slug: '',
-                        color: '',
-                      });
-                      navigate(`/master/status`)
-                    }}>
+                    <CButton
+                      type="reset"
+                      color="danger"
+                      onClick={() => {
+                        setStatusData({
+                          name: "",
+                          slug: "",
+                          color: "",
+                        });
+                        navigate(`/master/status`);
+                      }}
+                    >
                       Reset
                     </CButton>
                   </div>
@@ -339,7 +339,6 @@ export default function StatusSetting() {
               </CCardBody>
             </CCard>
           </CCol>
-
 
           <CCol>
             <div className="datatable">
@@ -370,8 +369,6 @@ export default function StatusSetting() {
               />
             </div>
           </CCol>
-
-
         </CRow>
       </CContainer>
     </>

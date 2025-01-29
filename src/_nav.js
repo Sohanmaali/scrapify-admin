@@ -1,6 +1,7 @@
 import React from "react";
 import CIcon from "@coreui/icons-react";
 import {
+  cilContact,
   cilFile,
   cilImage,
   cilParagraph,
@@ -12,6 +13,7 @@ import {
   cilUser,
 } from "@coreui/icons";
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
+import { Contact } from "lucide-react";
 
 const _nav = [
   {
@@ -92,9 +94,15 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: "Contact",
+    to: "/cms/contact/all",
+    icon: <CIcon icon={cilContact} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: "Files",
     to: "/cms/files/all",
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
   },
   {
     component: CNavGroup,

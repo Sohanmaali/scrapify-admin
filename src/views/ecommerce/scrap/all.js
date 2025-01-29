@@ -204,7 +204,7 @@ export default function AllScrap() {
         </div>
       ),
     },
-    {
+    { 
       name: "Address",
       selector: (row) => (
         <div className="data_table_colum">{row?.address || "-"}</div>

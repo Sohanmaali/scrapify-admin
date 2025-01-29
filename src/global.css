@@ -204,3 +204,6 @@ body.modal-open {
   }
 }
 
+.cursor-pointer{
+  cursor: pointer !important;
+}

@@ -1,28 +1,33 @@
 import {
   cilBraille,
-  cilCloudDownload,
+  cilFilterFrames,
+  cilMedicalCross,
   cilPencil,
   cilPrint,
   cilSpreadsheet,
   cilTrash,
 } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
-import { CContainer } from "@coreui/react";
+import { CContainer, CModal, CModalBody } from "@coreui/react";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import BasicProvider from "../../constants/BasicProvider";
+import HelperFunctions from "../../helpers/HelperFunction";
+import SubHeader from "../../components/custome/SubHeader";
+import paginationRowsPerPage from "../../constants/paginationRowsPerPage";
+import { DeleteModal } from "../../helpers/DeleteModal";
+import ContactMessage from "../../components/models/ContactMessage";
 
-// import SubHeader from "../../components/custome/SubHeader";
-import { DeleteModal } from "../../../helpers/DeleteModal";
-import BasicProvider from "../../../constants/BasicProvider";
-
-import DateTimeHelper from "../../../helpers/DateTimeHepler";
-import SubHeader from "../../../components/custome/SubHeader";
-import HelperFunctions from "../../../helpers/HelperFunction";
-import paginationRowsPerPage from "../../../constants/paginationRowsPerPage";
-import StatusPrev from "../../../components/StatusPrev";
+var subHeaderItems = [
+  {
+    name: "All Contact",
+    link: "/Contact/all",
+    icon: cilSpreadsheet,
+  },
+];
 
 export default function AllScrap() {
   const navigate = useNavigate();
@@ -31,6 +36,7 @@ export default function AllScrap() {
 
   const [userId, setuserId] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [contactMessage, setContactMessage] = useState(null);
 
   const [visible, setVisible] = useState(false);
   const [searchcurrentPage, setSearchCurrentPage] = useState(null);
@@ -40,7 +46,7 @@ export default function AllScrap() {
   var search = query.get("search") || "";
   let [defaultPage, setDefaultPage] = useState(currentPage);
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.data?.file);
+  const data = useSelector((state) => state.data?.contact);
   const toggleCleared = useSelector((state) => state.toggleCleared);
   const totalCount = useSelector((state) => state.totalCount);
 
@@ -74,17 +80,19 @@ export default function AllScrap() {
         queryData["page"] = currentPage;
         queryData["count"] = count;
         response = await new BasicProvider(
-          `cms/file/search?${HelperFunctions.convertToQueryString(queryData)}`,
+          `cms/contact/search?${HelperFunctions.convertToQueryString(
+            queryData
+          )}`,
           dispatch
         ).getRequest();
-        dispatch({ type: "set", data: { file: response?.data } });
+        dispatch({ type: "set", data: { contact: response?.data } });
       } else {
         response = await new BasicProvider(
-          `cms/file?page=${currentPage}&count=${count}`,
+          `cms/contact?page=${currentPage}&count=${count}`,
           dispatch
         ).getRequest();
 
-        dispatch({ type: "set", data: { file: response?.data?.data } });
+        dispatch({ type: "set", data: { contact: response?.data?.data } });
         dispatch({ type: "set", totalCount: response.data.total });
       }
 
@@ -97,7 +105,7 @@ export default function AllScrap() {
 
   useEffect(() => {
     const fetchSelectedRows = async () => {
-      const savedSelectedRows = 10; //await handleSelectedRowChange('files')
+      const savedSelectedRows = 10; //await handleSelectedRowChange('scraps')
       if (savedSelectedRows && !count) {
         setRowPerPage(savedSelectedRows);
       } else {
@@ -130,35 +138,14 @@ export default function AllScrap() {
     navigate({ search: "" });
   };
 
-  const handleDownload = (imageUrl, fileName) => {
-    fetch(imageUrl)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName || "downloaded-image.jpg"; 
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => console.error("Download error:", error));
-  };
   const columns = [
     {
-      name: "File Image",
+      name: "Name",
       selector: (row) => (
         <div className="pointer_cursor data_Table_title d-flex py-1">
           <div>
-            <div className="product_name">
-              <img
-                src={row?.filepath}
-                alt="File"
-                className="img-fluid object-fit-cover"
-                style={{ width: "50px", height: "50px" }}
-              />
-            </div>
+            <div className="product_name">{row?.name}</div>
+            {/* <div className="product_slug"> /{row.slug}</div> */}
           </div>
         </div>
       ),
@@ -166,28 +153,27 @@ export default function AllScrap() {
     },
 
     {
-      name: "Name",
-      selector: (row) => <div className="data_table_colum">{row.filename}</div>,
+      name: "Email",
+      selector: (row) => <div className="data_table_colum">{row.email}</div>,
     },
+
     {
-      name: "Size",
+      name: "Mobile",
+      selector: (row) => <div className="data_table_colum">{row.mobile}</div>,
+    },
+
+    {
+      name: "Message",
       selector: (row) => (
-        <div className="data_table_colum">
-          {row?.size
-            ? row.size < 1024
-              ? row.size + " Bytes"
-              : row.size < 1024 * 1024
-              ? (row.size / 1024).toFixed(2) + " KB"
-              : (row.size / 1024 / 1024).toFixed(2) + " MB"
-            : "--"}
+        <div className="action-btn d-flex gap-2 ">
+          <div className="edit-btn" style={{ cursor: "pointer" }}>
+            <CIcon
+              className="pointer_cursor"
+              icon={cilFilterFrames}
+              onClick={() => setContactMessage(row?.message)}
+            />
+          </div>
         </div>
-      )
-      
-    },
-    {
-      name: "module",
-      selector: (row) => (
-        <div className="data_table_colum">{row?.module || "--"}</div>
       ),
     },
 
@@ -195,7 +181,7 @@ export default function AllScrap() {
       name: "Create At",
       selector: (row) => (
         <div className="data_table_colum">
-          {moment(row?.create_at).fromNow()}
+          {moment(row?.createdAt).fromNow()}
         </div>
       ),
     },
@@ -205,11 +191,11 @@ export default function AllScrap() {
       cell: (row) => (
         <div className="action-btn d-flex gap-2 ">
           <div className="edit-btn" style={{ cursor: "pointer" }}>
-            <CIcon
+            {/* <CIcon
               className="pointer_cursor"
-              icon={cilCloudDownload}
-              onClick={() => handleDownload(row.filepath, "my-image.jpg")}
-            />
+              icon={cilPencil}
+              onClick={() => navigate(`/Contact/${row._id}/edit`)}
+            /> */}
           </div>
 
           <div className="delet-btn" style={{ cursor: "pointer" }}>
@@ -242,7 +228,16 @@ export default function AllScrap() {
   return (
     <>
       <SubHeader
-     
+        subHeaderItems={subHeaderItems}
+        handleFilter={(search) => handleFilter(search)}
+        setSearchCurrentPage={setSearchCurrentPage}
+        onReset={() => handleFilterReset()}
+        searchInput={search}
+        rowPerPage={rowPerPage}
+        defaultPage={defaultPage}
+        moduleName="cms/contact"
+        deletionType="delete"
+        isHideAddButton={true}
       />
 
       <CContainer>
@@ -272,24 +267,30 @@ export default function AllScrap() {
                 count = value;
                 setRowPerPage(value);
                 updatePageQueryParam("count", value);
-                setSelectedRowForModule("file", value);
+                setSelectedRowForModule("Contact", value);
               }}
               onSelectedRowsChange={(state) => handleRowChange(state)}
               clearSelectedRows={toggleCleared}
             />
           </div>
         )}
-        <DeleteModal
-          visible={visible}
-          userId={userId}
-          moduleName="cms/file"
-          currentPage={currentPage}
-          rowPerPage={rowPerPage}
-          setVisible={setVisible}
-          deletionType="trash"
-          handleClose={() => setVisible(false)}
-        />
       </CContainer>
+      <DeleteModal
+        visible={visible}
+        userId={userId}
+        moduleName="cms/contact"
+        currentPage={currentPage}
+        rowPerPage={rowPerPage}
+        setVisible={setVisible}
+        deletionType="delete"
+        handleClose={() => setVisible(false)}
+      />
+      {contactMessage && (
+        <ContactMessage
+          contactMessage={contactMessage}
+          setContactMessage={setContactMessage}
+        />
+      )}
     </>
   );
 }

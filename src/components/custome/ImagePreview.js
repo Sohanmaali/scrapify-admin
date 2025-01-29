@@ -3,7 +3,7 @@ import { CImage, CButton } from "@coreui/react";
 import { cilPencil, cilSpreadsheet, cilTrash } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 
-const ImagePreview = ({ initialValues, setInitialvalues }) => {
+const ImagePreview = ({ initialvalues, setInitialvalues }) => {
 
   
 
@@ -11,19 +11,22 @@ const ImagePreview = ({ initialValues, setInitialvalues }) => {
     setInitialvalues((prev) => ({ ...prev, featured_image: null }));
   };
   const image =
-    initialValues?.featured_image instanceof File
-      ? URL.createObjectURL(initialValues?.featured_image)
-      : `${initialValues?.featured_image?.filepath}` || '/assert/images/noimage.png'
+    initialvalues?.featured_image instanceof File
+      ? URL.createObjectURL(initialvalues?.featured_image)
+      : `${initialvalues?.featured_image?.filepath}` || '/assert/images/noimage.png'
 
+
+      // console.log("-=-==-=initialvalues=-==-=",initialvalues);
+      
 
   return (
     <div className="image-preview-container">
-      {initialValues?.featured_image && (
+      {initialvalues?.featured_image && (
         <div className="image-preview">
           <CImage
             src={image}
             alt="Selected Image"
-            height={"100px"}
+            // height={"50px"}
             className=" image"
           />
           <div className="image-preview-icon">

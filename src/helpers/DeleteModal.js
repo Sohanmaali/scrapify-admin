@@ -16,11 +16,12 @@ export const DeleteModal = ({
   visitedProfileId,
 }) => {
   const dispatch = useDispatch();
-
+  var module = "";
   if (moduleName) {
     var parts = moduleName.split("/");
-    var module = parts.pop();
+    module = parts.pop();
   }
+ 
 
   const capitalizeFirstLetter = (word) => {
     return word?.charAt(0).toUpperCase() + word?.slice(1);
@@ -28,8 +29,6 @@ export const DeleteModal = ({
 
   const handleDelete = async () => {
     if (deletionType === "trash") {
-
-
       const success = await HelperFunctions.trashData(moduleName, userId);
       dispatch({ type: "set", toggleCleared: false });
       dispatch({ type: "set", selectedrows: [] });
@@ -77,7 +76,6 @@ export const DeleteModal = ({
 
         dispatch({ type: "set", data: { [`${module}`]: response.data } });
         dispatch({ type: "set", totalCount: response.total });
-
       }
     }
   };
@@ -93,7 +91,7 @@ export const DeleteModal = ({
         <div className="logo_x m-auto mb-3">x</div>
         <span>
           Are you sure you want to delete the{" "}
-          {capitalizeFirstLetter(module?.slice(0, -1))} ?
+          {capitalizeFirstLetter(module)} ?
         </span>
       </CModalBody>
       <CModalFooter className="model_footer justify-content-center mb-3 pt-0">
