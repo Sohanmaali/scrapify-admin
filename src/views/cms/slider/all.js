@@ -153,7 +153,7 @@ export default function Allsliders() {
             <div>
               <img
                 src={
-                  process.env.REACT_APP_NODE_URL + row?.slider[0]?.image?.filepath
+                  row?.slider[0]?.image?.filepath
                 }
                 height={"50px"}
                 width={"50px"}

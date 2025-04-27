@@ -16,10 +16,8 @@ import {
   CButton,
   CFormTextarea,
 } from "@coreui/react";
-import CIcon from "@coreui/icons-react";
 import { toast } from "react-toastify";
 
-import { cilSpreadsheet, cilTrash } from "@coreui/icons";
 import SubHeader from "../../components/custome/SubHeader";
 import BasicProvider from "../../constants/BasicProvider";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,7 +25,6 @@ import { useDispatch } from "react-redux";
 import TreeNode from "../../helpers/treeHelper/TreeHelper";
 import ImagePreview from "../../components/custome/ImagePreview";
 import createFormData from "../../helpers/createFormData";
-// import createFormData from '../../helpers/createFormData';
 
 export default function Category() {
   const [category, setCategory] = useState([]);
@@ -74,30 +71,15 @@ export default function Category() {
     }
   }, [id]);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   // Special handling for the textarea
-
-  //   setInitialvalues((prevValues) => ({
-  //     ...prevValues,
-  //     [name]: value,
-  //   }));
-
-  // };
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
-    // Check if the input is a file input (i.e., it contains files)
     if (files) {
-      // Handle file input (e.g., for images)
       setInitialvalues((prevProfile) => ({
         ...prevProfile,
-        [name]: files[0], // Assuming only one file is selected
+        [name]: files[0],
       }));
     } else {
-      // Handle regular input (text, number, etc.)
       setInitialvalues((prevProfile) => ({
         ...prevProfile,
         [name]: value,
@@ -108,16 +90,13 @@ export default function Category() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let lines;
-    if (!id) {
-      lines = initialvalues?.name
-        .split("\n")
-        .filter((line) => line.trim() !== "");
-      setInitialvalues((prevValues) => ({
-        ...prevValues,
-        name: lines,
-      }));
-    }
+    let lines = initialvalues?.name
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
+
+    console.log("-=-=-=-==-=-=-req.body-=-=-=-=", lines);
+
     const data = createFormData({ ...initialvalues, name: lines });
     // const data ={}
     if (!data) {
@@ -155,9 +134,7 @@ export default function Category() {
         `cms/category/type/${type}`
       ).getRequest();
 
-      if (response?.status == "success") {
-        setParentCategory(response?.data || []);
-      }
+      setParentCategory([]);
     } catch (error) {
       console.error("ERROR", error);
     }
@@ -221,7 +198,9 @@ export default function Category() {
                     name="type"
                     value={initialvalues?.type}
                     onChange={(e) => {
-                      findByType(e.target.value);
+                      if (e.target.value != "other") {
+                        findByType(e.target.value);
+                      }
                       handleChange(e);
                     }}
                   >
@@ -237,43 +216,40 @@ export default function Category() {
                   </CFormSelect>
                 </div>
 
-                {/* <div>
-                  <div>
-                    <CFormLabel className="mt-2">
-                      Parent Category<span className="text-danger">*</span>
+                {initialvalues?.type === "other" && (
+                  <div className="mt-2">
+                    <CFormLabel className="">
+                      Other Type <span className="text-danger">*</span>
                     </CFormLabel>
-                    <CFormSelect
-                      name="parent"
-                      value={initialvalues?.parent}
+                    <CFormInput
+                      type="text"
+                      name="other"
                       onChange={handleChange}
-                    >
-                      <option>Select Category</option>
-                      {parentCategory?.length > 0
-                        ? parentCategory.map((parent, idx) => (
-                            <option key={idx} value={parent?._id}>
-                              {parent?.name}
-                            </option>
-                          ))
-                        : category.map((parent, idx) => (
-                            <option key={idx} value={parent?._id}>
-                              {parent?.name}
-                            </option>
-                          ))}
-                    </CFormSelect>
+                      value={initialvalues?.other}
+                      placeholder="Enter other type"
+                    />
                   </div>
-                </div> */}
-
+                )}
                 <div className="mt-2">
                   <CFormLabel className="">
-                    Price per kg/unit <span className="text-danger">*</span>
+                    parent <span className="text-danger">*</span>
                   </CFormLabel>
-                  <CFormInput
-                    type="text"
-                    name="price"
-                    onChange={handleChange}
-                    value={initialvalues?.price}
-                    placeholder="Enter Price per kg/unit"
-                  />
+                  <CFormSelect
+                    name="parent"
+                    value={initialvalues?.parent}
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                  >
+                    <option value={""}>Select parent</option>
+
+                    {parentCategory.length > 0 &&
+                      parentCategory.map((cat, idx) => (
+                        <option value={cat?._id} key={idx}>
+                          {cat?.name}
+                        </option>
+                      ))}
+                  </CFormSelect>
                 </div>
 
                 <div className="mt-2">
